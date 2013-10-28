@@ -1,7 +1,7 @@
-#Code reader
-#
-#For every .cpp file that exists in codebase
-#read each line of code and store function calls for colour and link function
+//Code reader
+//
+//For every .cpp file that exists in codebase
+//read each line of code and store function calls for colour and link function
 
 #include "Analyser.h"
 #include "Colourizer.h"

@@ -1,9 +1,9 @@
-#Colour Function
-#
-#store number of occurences in HashMap
+//Colour Function
+//
+//store number of occurences in HashMap
 
 class colourizer(){
-	#hashmap
-	#max
-	#mix
+	//hashmap
+	//max
+	//mix
 };

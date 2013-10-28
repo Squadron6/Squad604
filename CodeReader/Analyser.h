@@ -2,7 +2,7 @@
 
 class analyser()
 {
-	#does something
+	//does something
 	string input;
 	int methodCounts;
 		
