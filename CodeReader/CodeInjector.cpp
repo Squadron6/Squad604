@@ -64,6 +64,7 @@ int main(void){
         based on the directory path, the following code will go through all the .cpp files 
         TODO: traverse subdirectories & look for cpp files recursively; pull this out into a separate method? ****/
   unsigned char isFile = 0x8;
+  unsigned char isFolder = 0x4;
   DIR *dp;
   struct dirent *entry;
   const char *dirname = "."; //path of directory to read
@@ -77,14 +78,23 @@ int main(void){
     while (entry = readdir(dp)){ // for every entry in the directory
       string str(entry->d_name);
       if (entry->d_type == isFile && str.compare(str.size()-3, 3, "cpp") == 0){ // if it is a cpp file
-  /****** NOTE END ******/
         cout << entry->d_name << endl; // print out the name of the file
         testfile.open(entry->d_name);
         getline(testfile, thing); //just going to dump out the first line for testing
         cout << thing << endl;
         testfile.close();
       }
+      else if (entry->d_type == isFolder && str!="." && str!=".."){ // if it's a folder, not current or parent
+        // we need to explore this folder too, checking for .cpp files
+        // this likely means that this funtionality needs to pulled out into a function like...
+        // void directoryExplorer(string directoryPath)
+        //  use the code from the above note
+        //  and for the folder case (this condition!) then recursively call this method with new folder as path
+        // not sure if folder path needs ./ to be prepended
+        cout << "this is a folder! " << entry->d_name << endl;
+      }
     }
+  /****** NOTE END ******/
   string currLine;
   string nextLine;
   ifstream infile;
