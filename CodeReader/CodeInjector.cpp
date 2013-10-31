@@ -58,6 +58,34 @@ void inject_code(string fileName)
 	tempfile.close();
 }
 
+void exloreDirectory(string directory){
+  unsigned char isFile = 0x8;
+  unsigned char isFolder = 0x4;
+  DIR *dp;
+  struct dirent *entry;
+  const char *dirname = directory.c_str(); //path of directory to read
+  dp = opendir(dirname);
+
+  ifstream testfile;
+  string thing;
+
+  if (dp){
+    while (entry = readdir(dp)){ // for every entry in the directory
+      string str(entry->d_name);
+      if (entry->d_type == isFile && str.compare(str.size()-3, 3, "cpp") == 0){ // if it is a cpp file
+        cout << entry->d_name << endl; // print out the name of the file
+        testfile.open(entry->d_name);
+        getline(testfile, thing); //just going to dump out the first line for testing
+        cout << thing << endl;
+        testfile.close();
+      }
+      else if (entry->d_type == isFolder && str!="." && str!=".."){ // if it's a folder, not current or parent
+        //exploreDirectory(str); //how can this be recursive? it says exploreDirectory was not declared in this scope... do we need to create a .h file?
+      }
+    }
+  }
+}
+
 int main(void){
   /**** NOTE START
         integrate the following into the pre-existing code injection stuff 
@@ -95,6 +123,7 @@ int main(void){
       }
     }
   /****** NOTE END ******/
+  // I think that the following needs to be moved into exploreDirectory into the file case
   string currLine;
   string nextLine;
   ifstream infile;
@@ -103,26 +132,26 @@ int main(void){
   getline(infile, currLine);
   while (!infile.eof())
 	{
-	getline(infile, nextLine);
-	if(isMethod(currLine, nextLine))
-		{
-			int endCount = lineCount+2;
-			
-			string endLine;
-			getline(infile,endLine);
-			cout << currLine << endl << "begining of method: " << lineCount << endl;
-			while(endLine.compare("}") != 0)
-			{
-			getline(infile,endLine);
-			endCount++;
-			}
-			cout << endLine << endl << "end of method: " << endCount << endl;
-			getline(infile, nextLine);
-			lineCount = endCount;
-		}
-	currLine = nextLine;	
-	lineCount++;
-	}
+    getline(infile, nextLine);
+    if(isMethod(currLine, nextLine))
+    {
+      int endCount = lineCount+2;
+      
+      string endLine;
+      getline(infile,endLine);
+      cout << currLine << endl << "begining of method: " << lineCount << endl;
+      while(endLine.compare("}") != 0)
+      {
+      getline(infile,endLine);
+      endCount++;
+      }
+      cout << endLine << endl << "end of method: " << endCount << endl;
+      getline(infile, nextLine);
+      lineCount = endCount;
+    }
+    currLine = nextLine;	
+    lineCount++;
+  }
   inject_code("proc.cpp");
 	
  }
