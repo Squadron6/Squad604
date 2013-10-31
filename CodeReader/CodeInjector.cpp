@@ -1,5 +1,5 @@
 /*
-Code reader
+Code Injector
 
 For every .cpp file that exists in codebase
 read each line of code and store function calls for colour and link function
@@ -24,8 +24,6 @@ bool isMethod(string currLine, string nextLine)
         }
         else
         return false;
-
-
 }
 
 void inject_code(string fileName)
@@ -40,36 +38,53 @@ void inject_code(string fileName)
 	tempfile << "#include <fstream>" << endl;
 	while(!infile.eof())
 	{
-	getline(infile, currLine);
-	if(currLine.compare("{") != 0 && currLine.compare("}") != 0)
-		{
-		tempfile << currLine << "\n";
-		}
-	if(currLine.compare("{") == 0)
-	{
-	currLine = currLine + "ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << endl;\n";
-	tempfile << currLine << "\n";
-	}
-	if(currLine.compare("}") == 0)
-	{
-        currLine = "ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << \"return\" << endl;\n" + currLine;
-        tempfile << currLine << "\n";
-	}
+    getline(infile, currLine);
+    if(currLine.compare("{") != 0 && currLine.compare("}") != 0)
+      {
+      tempfile << currLine << "\n";
+      }
+    if(currLine.compare("{") == 0)
+    {
+    currLine = currLine + "ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << endl;\n";
+    tempfile << currLine << "\n";
+    }
+    if(currLine.compare("}") == 0)
+    {
+          currLine = "ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << \"return\" << endl;\n" + currLine;
+          tempfile << currLine << "\n";
+    }
  	
 	}
 	tempfile.close();
 }
 
 int main(void){
+  /**** NOTE START
+        integrate the following into the pre-existing code injection stuff 
+        based on the directory path, the following code will go through all the .cpp files 
+        TODO: traverse subdirectories & look for cpp files recursively; pull this out into a separate method? ****/
+  unsigned char isFile = 0x8;
   DIR *dp;
   struct dirent *entry;
   const char *dirname = "."; //path of directory to read
   dp = opendir(dirname);
+  
+  /* the next 2 lines are to-be-removed */
+  ifstream testfile;
+  string thing;
+
   if (dp){
-    while (entry = readdir(dp)){
-      cout << entry->d_name << endl;
-   
-	}
+    while (entry = readdir(dp)){ // for every entry in the directory
+      string str(entry->d_name);
+      if (entry->d_type == isFile && str.compare(str.size()-3, 3, "cpp") == 0){ // if it is a cpp file
+  /****** NOTE END ******/
+        cout << entry->d_name << endl; // print out the name of the file
+        testfile.open(entry->d_name);
+        getline(testfile, thing); //just going to dump out the first line for testing
+        cout << thing << endl;
+        testfile.close();
+      }
+    }
   string currLine;
   string nextLine;
   ifstream infile;
