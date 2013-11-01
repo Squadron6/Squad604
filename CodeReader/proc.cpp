@@ -1,3 +1,7 @@
+#include <fstream>
+#include <fstream>
+#include <fstream>
+#include <fstream>
 /** \file proc.c
 
 Utilities for keeping track of jobs, processes and subshells, as
@@ -87,37 +91,72 @@ static int last_status=0;
 static sig_atomic_t got_signal=0;
 
 bool job_list_is_empty(void)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     return parser_t::principal_parser().job_list().empty();
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void job_iterator_t::reset()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     this->current = job_list->begin();
     this->end = job_list->end();
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 job_iterator_t::job_iterator_t(job_list_t &jobs) : job_list(&jobs)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     this->reset();
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 job_iterator_t::job_iterator_t() : job_list(&parser_t::principal_parser().job_list())
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     this->reset();
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void print_jobs(void)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     job_iterator_t jobs;
     job_t *j;
     while ((j = jobs.next()))
     {
         printf("%p -> %ls -> (foreground %d, complete %d, stopped %d, constructed %d)\n", j, j->command_wcstr(), job_get_flag(j, JOB_FOREGROUND), job_is_completed(j), job_is_stopped(j), job_get_flag(j, JOB_CONSTRUCTED));
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 int is_interactive_session=0;
 int is_subshell=0;
@@ -133,22 +172,43 @@ static int is_interactive = -1;
 static bool proc_had_barrier = false;
 
 int get_is_interactive(void)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     return is_interactive;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 bool get_proc_had_barrier()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     return proc_had_barrier;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void set_proc_had_barrier(bool flag)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     proc_had_barrier = flag;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /**
    The event variable used to send all process event
@@ -161,25 +221,46 @@ static event_t event(0);
 static std::vector<int> interactive_stack;
 
 void proc_init()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     proc_push_interactive(0);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 /**
    Remove job from list of jobs
 */
 static int job_remove(job_t *j)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     return parser_t::principal_parser().job_remove(j);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void job_promote(job_t *job)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     parser_t::principal_parser().job_promote(job);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 /*
@@ -187,13 +268,24 @@ void job_promote(job_t *job)
   it.
 */
 void job_free(job_t * j)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     job_remove(j);
     delete j;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void proc_destroy()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     job_list_t &jobs = parser_t::principal_parser().job_list();
     while (! jobs.empty())
     {
@@ -201,25 +293,46 @@ void proc_destroy()
         debug(2, L"freeing leaked job %ls", job->command_wcstr());
         job_free(job);
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void proc_set_last_status(int s)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     last_status = s;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 int proc_get_last_status()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     return last_status;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /* Basic thread safe job IDs. The vector consumed_job_ids has a true value wherever the job ID corresponding to that slot is in use. The job ID corresponding to slot 0 is 1. */
 static pthread_mutex_t job_id_lock = PTHREAD_MUTEX_INITIALIZER;
 static std::vector<bool> consumed_job_ids;
 
 job_id_t acquire_job_id(void)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     scoped_lock lock(job_id_lock);
 
     /* Find the index of the first 0 slot */
@@ -236,10 +349,17 @@ job_id_t acquire_job_id(void)
         consumed_job_ids.push_back(true);
         return (job_id_t)consumed_job_ids.size();
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void release_job_id(job_id_t jid)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     assert(jid > 0);
     scoped_lock lock(job_id_lock);
     size_t slot = (size_t)(jid - 1), count = consumed_job_ids.size();
@@ -256,19 +376,36 @@ void release_job_id(job_id_t jid)
             break;
     }
     consumed_job_ids.resize(count + 1);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 job_t *job_get(job_id_t id)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     return parser_t::principal_parser().job_get(id);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 job_t *job_get_from_pid(int pid)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     return parser_t::principal_parser().job_get_from_pid(pid);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 /*
@@ -277,7 +414,11 @@ job_t *job_get_from_pid(int pid)
    \param j the job to test
 */
 int job_is_stopped(const job_t *j)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     process_t *p;
 
     for (p = j->first_process; p; p = p->next)
@@ -288,7 +429,10 @@ int job_is_stopped(const job_t *j)
         }
     }
     return 1;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 /*
@@ -297,7 +441,11 @@ int job_is_stopped(const job_t *j)
    \param j the job to test
 */
 bool job_is_completed(const job_t *j)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     assert(j->first_process != NULL);
     bool result = true;
     for (process_t *p = j->first_process; p != NULL; p = p->next)
@@ -309,10 +457,17 @@ bool job_is_completed(const job_t *j)
         }
     }
     return result;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void job_set_flag(job_t *j, unsigned int flag, int set)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     if (set)
     {
         j->flags |= flag;
@@ -321,15 +476,29 @@ void job_set_flag(job_t *j, unsigned int flag, int set)
     {
         j->flags &= ~flag;
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 int job_get_flag(const job_t *j, unsigned int flag)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     return !!(j->flags & flag);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 int job_signal(job_t *j, int signal)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     pid_t my_pid = getpid();
     int res = 0;
 
@@ -357,7 +526,10 @@ int job_signal(job_t *j, int signal)
     }
 
     return res;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 /**
@@ -366,7 +538,11 @@ int job_signal(job_t *j, int signal)
    This is called from a signal handler.
 */
 static void mark_process_status(const job_t *j, process_t *p, int status)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
 //	debug( 0, L"Process %ls %ls", p->argv[0], WIFSTOPPED (status)?L"stopped":(WIFEXITED( status )?L"exited":(WIFSIGNALED( status )?L"signaled to exit":L"BLARGH")) );
     p->status = status;
 
@@ -397,16 +573,26 @@ static void mark_process_status(const job_t *j, process_t *p, int status)
          */
         ignore = write(2, mess, strlen(mess));
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void job_mark_process_as_failed(const job_t *job, process_t *p)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     /* The given process failed to even lift off (e.g. posix_spawn failed) and so doesn't have a valid pid. Mark it as dead. */
     for (process_t *cursor = p; cursor != NULL; cursor = cursor->next)
     {
         cursor->completed = 1;
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /**
    Handle status update for child \c pid. This function is called by
@@ -417,7 +603,11 @@ void job_mark_process_as_failed(const job_t *job, process_t *p)
    \param status the status as returned by wait
 */
 static void handle_child_status(pid_t pid, int status)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     bool found_proc = false;
     const job_t *j = NULL;
     process_t *p = NULL;
@@ -509,7 +699,10 @@ static void handle_child_status(pid_t pid, int status)
         */
     }
     return;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 process_t::process_t() :
     argv_array(),
@@ -528,14 +721,28 @@ process_t::process_t() :
     ,last_time(),
     last_jiffies(0)
 #endif
-{
-}
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 process_t::~process_t()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     if (this->next != NULL)
         delete this->next;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 job_t::job_t(job_id_t jobid, const io_chain_t &bio) :
     command_str(),
@@ -546,30 +753,55 @@ job_t::job_t(job_id_t jobid, const io_chain_t &bio) :
     tmodes(),
     job_id(jobid),
     flags(0)
-{
-}
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 job_t::~job_t()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     if (first_process != NULL)
         delete first_process;
     release_job_id(job_id);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /* Return all the IO redirections. Start with the block IO, then walk over the processes */
 io_chain_t job_t::all_io_redirections() const
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     io_chain_t result = this->block_io;
     for (process_t *p = this->first_process; p != NULL; p = p->next)
     {
         result.append(p->io_chain());
     }
     return result;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /* This is called from a signal handler */
 void job_handle_signal(int signal, siginfo_t *info, void *con)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
 
     int status;
     pid_t pid;
@@ -597,7 +829,10 @@ void job_handle_signal(int signal, siginfo_t *info, void *con)
     }
     kill(0, SIGIO);
     errno=errno_old;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /**
 	Format information about job status for the user to look at.
@@ -606,16 +841,27 @@ void job_handle_signal(int signal, siginfo_t *info, void *con)
 	\param status a string description of the job exit type
 */
 static void format_job_info(const job_t *j, const wchar_t *status)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     fwprintf(stdout, L"\r");
     fwprintf(stdout, _(L"Job %d, \'%ls\' has %ls"), j->job_id, j->command_wcstr(), status);
     fflush(stdout);
     tputs(clr_eol,1,&writeb);
     fwprintf(stdout, L"\n");
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void proc_fire_event(const wchar_t *msg, int type, pid_t pid, int status)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
 
     event.type=type;
     event.param1.pid = pid;
@@ -625,10 +871,17 @@ void proc_fire_event(const wchar_t *msg, int type, pid_t pid, int status)
     event.arguments.push_back(to_string<int>(status));
     event_fire(&event);
     event.arguments.resize(0);
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 int job_reap(bool interactive)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     job_t *jnext;
     int found=0;
@@ -754,7 +1007,10 @@ int job_reap(bool interactive)
     locked = 0;
 
     return found;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 #ifdef HAVE__PROC_SELF_STAT
@@ -768,7 +1024,11 @@ int job_reap(bool interactive)
    Get the CPU time for the specified process
 */
 unsigned long proc_get_jiffies(process_t *p)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     wchar_t fn[FN_SIZE];
 
     char state;
@@ -846,13 +1106,20 @@ unsigned long proc_get_jiffies(process_t *p)
     fclose(f);
     return utime+stime+cutime+cstime;
 
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /**
    Update the CPU time for all jobs
 */
 void proc_update_jiffies()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     job_t* job;
     process_t *p;
     job_iterator_t j;
@@ -865,7 +1132,10 @@ void proc_update_jiffies()
             p->last_jiffies = proc_get_jiffies(p);
         }
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 #endif
@@ -879,7 +1149,11 @@ void proc_update_jiffies()
    \return 1 if buffers were available, zero otherwise
 */
 static int select_try(job_t *j)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     fd_set fds;
     int maxfd=-1;
 
@@ -913,7 +1187,10 @@ static int select_try(job_t *j)
     }
 
     return -1;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /**
    Read from descriptors until they are empty.
@@ -921,7 +1198,11 @@ static int select_try(job_t *j)
    \param j the job to test
 */
 static void read_try(job_t *j)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     io_buffer_t *buff = NULL;
 
     /*
@@ -967,7 +1248,10 @@ static void read_try(job_t *j)
             }
         }
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 /**
@@ -980,7 +1264,11 @@ static void read_try(job_t *j)
    set the terminal attributes to those saved in the job.
  */
 static bool terminal_give_to_job(job_t *j, int cont)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
 
     if (tcsetpgrp(0, j->pgid))
     {
@@ -1005,7 +1293,10 @@ static bool terminal_give_to_job(job_t *j, int cont)
         }
     }
     return true;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 /**
    Returns control of the terminal to the shell, and saves the terminal
@@ -1013,7 +1304,11 @@ static bool terminal_give_to_job(job_t *j, int cont)
    ownership to the job at a later time .
 */
 static int terminal_return_from_job(job_t *j)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
 
     if (tcsetpgrp(0, getpgrp()))
     {
@@ -1049,10 +1344,17 @@ static int terminal_return_from_job(job_t *j)
 #endif
 
     return 1;
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void job_continue(job_t *j, bool cont)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     /*
       Put job first in the job list
     */
@@ -1235,10 +1537,17 @@ void job_continue(job_t *j, bool cont)
         }
     }
 
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 int proc_format_status(int status)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     if (WIFSIGNALED(status))
     {
         return 128+WTERMSIG(status);
@@ -1249,11 +1558,18 @@ int proc_format_status(int status)
     }
     return status;
 
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 
 void proc_sanity_check()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     job_t *j;
     job_t *fg_job=0;
 
@@ -1317,24 +1633,45 @@ void proc_sanity_check()
         }
 
     }
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void proc_push_interactive(int value)
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     int old = is_interactive;
     interactive_stack.push_back(is_interactive);
     is_interactive = value;
     if (old != value)
         signal_set_handlers();
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
 
 void proc_pop_interactive()
-{
+{ofstream logfile;
+logfile.open("log.txt");
+logfile << __func__ << endl;
+logfile.close();
+
     ASSERT_IS_MAIN_THREAD();
     int old = is_interactive;
     is_interactive= interactive_stack.back();
     interactive_stack.pop_back();
     if (is_interactive != old)
         signal_set_handlers();
-}
+logfile.open("log.txt");
+logfile << "return" << endl;
+logfile.close()
+;}
+
+
+
+

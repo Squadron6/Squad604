@@ -9,32 +9,26 @@ read each line of code and store function calls for colour and link function
 #include <dirent.h>
 #include <fstream>
 #include <string>
+#include <cstring>
 using namespace std;
 
-bool isMethod(string currLine, string nextLine)
-{
-        if((currLine.find("static") != string::npos || currLine.find("void") != string::npos
-        || currLine.find("const") != string::npos || currLine.find("signed") != string::npos
-        || currLine.find("int") != string::npos || currLine.find("long") != string::npos))
-        {
-                if(nextLine.compare("{") == 0)
-                {
-                return true;
-                }
-        }
-        else
-        return false;
-}
-
-void inject_code(string fileName)
+void inject_code(string fileName, string dirName)
 {
 	ifstream infile;
 	string currLine;
 	int lineCOunt = 1;
 	const char * fname = fileName.c_str();
-	infile.open(fname);
+	const char * dname = dirName.c_str();
+	string fullName = dirName + "/" + fileName;
+	const char * fulName = fullName.c_str();
+	string tempName = dirName+"/"+"temp.cpp";
+	const char * tempNamec = tempName.c_str();
+	string oldName = dirName+"/"+fileName+".old";
+	const char * oldNamec = oldName.c_str();
+	
+	infile.open(fulName);
 	ofstream tempfile;
-	tempfile.open("temp.cpp");
+	tempfile.open(tempNamec);
 	tempfile << "#include <fstream>" << endl;
 	while(!infile.eof())
 	{
@@ -45,17 +39,20 @@ void inject_code(string fileName)
       }
     if(currLine.compare("{") == 0)
     {
-    currLine = currLine + "ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << endl;\n";
+    currLine = currLine + "ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << endl;\nlogfile.close();\n";
     tempfile << currLine << "\n";
     }
     if(currLine.compare("}") == 0)
     {
-          currLine = "ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << \"return\" << endl;\n" + currLine;
+          currLine = "logfile.open(\"log.txt\");\nlogfile << \"return\" << endl;\nlogfile.close();\n" + currLine;
           tempfile << currLine << "\n";
     }
  	
 	}
 	tempfile.close();
+	infile.close();
+	rename(fulName, oldNamec);
+	rename(tempNamec, fulName);
 }
 
 void exloreDirectory(string directory){
@@ -95,7 +92,7 @@ int main(void){
   unsigned char isFolder = 0x4;
   DIR *dp;
   struct dirent *entry;
-  const char *dirname = "."; //path of directory to read
+  const char *dirname = "../codeBase/fish-shell-master"; //path of directory to read
   dp = opendir(dirname);
   
   /* the next 2 lines are to-be-removed */
@@ -106,11 +103,10 @@ int main(void){
     while (entry = readdir(dp)){ // for every entry in the directory
       string str(entry->d_name);
       if (entry->d_type == isFile && str.compare(str.size()-3, 3, "cpp") == 0){ // if it is a cpp file
-        cout << entry->d_name << endl; // print out the name of the file
-        testfile.open(entry->d_name);
-        getline(testfile, thing); //just going to dump out the first line for testing
-        cout << thing << endl;
-        testfile.close();
+      	string fileName = entry->d_name;
+	string dirNames = dirname;
+	string fullName = dirNames+"/"+ fileName;
+	inject_code(fileName, dirNames);
       }
       else if (entry->d_type == isFolder && str!="." && str!=".."){ // if it's a folder, not current or parent
         // we need to explore this folder too, checking for .cpp files
@@ -124,36 +120,6 @@ int main(void){
     }
   /****** NOTE END ******/
   // I think that the following needs to be moved into exploreDirectory into the file case
-  string currLine;
-  string nextLine;
-  ifstream infile;
-  int lineCount = 1;
-  infile.open("proc.cpp");
-  getline(infile, currLine);
-  while (!infile.eof())
-	{
-    getline(infile, nextLine);
-    if(isMethod(currLine, nextLine))
-    {
-      int endCount = lineCount+2;
-      
-      string endLine;
-      getline(infile,endLine);
-      cout << currLine << endl << "begining of method: " << lineCount << endl;
-      while(endLine.compare("}") != 0)
-      {
-      getline(infile,endLine);
-      endCount++;
-      }
-      cout << endLine << endl << "end of method: " << endCount << endl;
-      getline(infile, nextLine);
-      lineCount = endCount;
-    }
-    currLine = nextLine;	
-    lineCount++;
-  }
-  inject_code("proc.cpp");
-	
  }
 }
 
