@@ -46,7 +46,7 @@ void inject_code(string fileName, string dirName)
       }
     if(currLine.compare("{") == 0)
     {
-    currLine = currLine + "ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << endl;\nlogfile.close();\n";
+    currLine = currLine + "std::ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << std::endl;\nlogfile.close();\n";
     tempfile << currLine << "\n";
     }
     if(currLine.compare("}") == 0)
@@ -92,7 +92,8 @@ void exploreDirectory(string directory){
 }
 
 int main(void){
-  string dirname = "../codeBase/fish-shell-master"; //path to codebase
+  string dirname = "../../fish-shell-master"; //path to codebase
+  //string dirname = "../codeBase/fish-shell-master"; //path to codebase
   exploreDirectory(dirname);
 }
 
