@@ -51,7 +51,7 @@ void inject_code(string fileName, string dirName)
     }
     if(currLine.compare("}") == 0)
     {
-          currLine = "logfile.open(\"log.txt\");\nlogfile << \"return\" << endl;\nlogfile.close();\n" + currLine;
+          currLine = "logfile.open(\"log.txt\");\nlogfile << \"return\" << std::endl;\nlogfile.close();\n" + currLine;
           tempfile << currLine << "\n";
     }
  	
