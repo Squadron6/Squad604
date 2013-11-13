@@ -32,6 +32,7 @@ void inject_code(string fileName, string dirName)
 	const char * tempNamec = tempName.c_str();
 	string oldName = dirName+"/"+fileName+".old";
 	const char * oldNamec = oldName.c_str();
+  bool flag = false; //use to flag cases where we won't inject
 	
 	infile.open(fulName);
 	ofstream tempfile;
@@ -40,11 +41,14 @@ void inject_code(string fileName, string dirName)
 	while(!infile.eof())
 	{
     getline(infile, currLine);
+    if(currLine.find("class") != std::string::npos){ //check line contains 'class' 
+      flag = true;
+    }
     if(currLine.compare("{") != 0 && currLine.compare("}") != 0)
       {
       tempfile << currLine << "\n";
       }
-    if(currLine.compare("{") == 0)
+    if(currLine.compare("{") == 0 && !flag)
     {
     currLine = currLine + "std::ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << std::endl;\nlogfile.close();\n";
     tempfile << currLine << "\n";
@@ -53,6 +57,9 @@ void inject_code(string fileName, string dirName)
     {
           currLine = "logfile.open(\"log.txt\");\nlogfile << \"return\" << std::endl;\nlogfile.close();\n" + currLine;
           tempfile << currLine << "\n";
+    }
+    if(flag){
+      flag = false;
     }
  	
 	}
