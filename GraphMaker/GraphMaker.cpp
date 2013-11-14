@@ -14,3 +14,22 @@ int Circle(int const argc, const char ** const argv)
 
   ubigraph_clear();
 }
+
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+int main () {
+  ofstream myfile;
+  myfile.open ("graph.py");
+  myfile << "import xmlrpclib\n";
+  myfile << "server = xmlrpclib.Server('http://127.0.0.1:20738/RPC2')\n";
+  myfile << "G = server.ubigraph\n";
+  myfile << "G.clear()\n";
+  myfile << "x = G.new_vertex()\n";
+  myfile << "y = G.new_vertex()\n";
+  myfile << "G.new_edge(x,y)\n";
+  myfile.close();
+  return 0;
+
+}
