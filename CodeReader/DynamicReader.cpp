@@ -4,10 +4,13 @@
 #include <string>
 #include <stack>
 #include <cstring>
+#include <unordered_map>
+
 using namespace std;
 
-void parse_log(string logfile)
+unordered_map<string, int> parse_log(string logfile)
 {	
+	unordered_map<string, int> funcMap;
 	std::stack<string> functionStack;
 	ifstream infile;
 	ofstream outfile;
@@ -18,8 +21,20 @@ void parse_log(string logfile)
 	while(!infile.eof())
 	{
 	getline(infile, currline);
+	cout<<"current line is: " << currline << " and string length is " << currline.length() << endl;
 	if(currline.compare("return") != 0)
 		{
+		unordered_map<string, int>::const_iterator got = funcMap.find(currline);
+		if(got==funcMap.end())
+			{
+			funcMap.insert(make_pair(currline,1));
+			//cout<<"adding: " << currline << " to map" << endl;
+			}
+		else
+			{
+			int newCount = got->second + 1;
+			funcMap[currline] = newCount;
+			}
 		functionStack.push(currline);
 		}
 	else
@@ -32,17 +47,15 @@ void parse_log(string logfile)
 	}
 	infile.close();
 	outfile.close();
-	
+	funcMap.erase("");
+	return funcMap;	
 }
 
 int main(void)
 {
-	string peek;
-	std::stack<string> funcStack;
-	funcStack.push("test");
-	funcStack.push("test2");
-	peek = funcStack.top();
-	cout<<endl<<"peeked at: "<<peek<<endl;
-	parse_log("test.log");
+	unordered_map<string, int> functionMap;
+	functionMap = parse_log("test.log");
+	for(auto& x: functionMap)
+		cout<< x.first << ": " << x.second << endl;
 }
 
