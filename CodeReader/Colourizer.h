@@ -5,7 +5,8 @@
 #ifndef Colourizer_h
 #define Colourizer_h
 
-int find_max(unordered_map);
-unordered_map convert_to_RGB(unordered_map)
+static int find_max(std::unordered_map<std::string, int> input);
+static int find_min(std::unordered_map<std::string, int> input);
 
+static std::unordered_map<std::string, std::string> convert_to_RGB(std::unordered_map<std::string, int> input);
 #endif
