@@ -5,8 +5,9 @@
 #include "Colourizer.h"
 #include <iomanip>
 
-// Member variables
 using namespace std;
+
+// Member variables
 int RGB_converter = 510;
 
 // Obtain the max number of occurrences
@@ -64,29 +65,30 @@ static std::unordered_map<string, string> convert_to_RGB(std::unordered_map<stri
             temp = (int) std::round(((int) (510 * buffer)) * 65536 + 65280);
             RGB_value << "0x" << setw(6) << std::setfill('0') << std::hex << temp;
         }
-
+//        cout << it->first << endl;
+//        cout << RGB_value.str() << endl;
         colour_map[it->first] = RGB_value.str();
     }
     return colour_map;
 }
 
 int main() {
-//    TEST CASES
-//
-//    unordered_map <string, int> sample;
-//    sample["test1"] = 1;
-//    sample["test2"] = 2;
-//    sample["test3"] = 3;
-//    sample["test4"] = 4;
-//    sample["test5"] = 5;
-//    sample["test6"] = 6;
-//    sample["test7"] = 7;
-//    sample["test8"] = 8;
-//    sample["test9"] = 9;
-//    sample["test10"] = 10;
-//
-//    cout << find_max(sample) << endl;
-//    unordered_map<string, string> sample_RGB = convert_to_RGB(sample, find_max(sample), find_min(sample));
-//
-//    //cout << sample_RGB["test4"] << endl;
+    //TEST CASES
+
+    unordered_map <string, int> sample;
+    sample["test1"] = 1;
+    sample["test2"] = 2;
+    sample["test3"] = 3;
+    sample["test4"] = 4;
+    sample["test5"] = 5;
+    sample["test6"] = 6;
+    sample["test7"] = 7;
+    sample["test8"] = 8;
+    sample["test9"] = 9;
+    sample["test10"] = 10;
+
+    //cout << find_max(sample) << endl;
+    unordered_map<string, string> sample_RGB = convert_to_RGB(sample, find_max(sample), find_min(sample));
+
+    //cout << sample_RGB["test4"] << endl;
 }
