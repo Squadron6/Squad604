@@ -37,17 +37,19 @@ void inject_code(string fileName, string dirName)
 	string oldName = dirName+"/"+fileName+".old";
 	const char * oldNamec = oldName.c_str();
   bool flag = false; //use to flag cases where we won't inject
+  bool returnflag = false;
+  bool ifflag = false;
   string flagcase1 = "class";
   string flagcase2 = "struct";
   string flagcase3 = "enum";
   string flagcase4 = "static const struct";
-  string flagcase5 = "static const";
-  string flagcase6 = "const";
+  string flagcase6 = "static const";
   string flagcase7 = "typedef struct";
   string flagcase8 = "static enum";
   string flagcase9 = "extern \"C\" {";
   string flagcase10 = "static struct";
   string flagcase11 = "typedef enum";
+  string flagcase12 = "static size_t hack_iconv";
 	
 	infile.open(fulName);
 	ofstream tempfile;
@@ -58,37 +60,74 @@ void inject_code(string fileName, string dirName)
     getline(infile, currLine);
     if((!currLine.compare(0, flagcase1.size(), flagcase1) || !currLine.compare(0, flagcase2.size(), flagcase2) || 
     !currLine.compare(0, flagcase3.size(), flagcase3) || !currLine.compare(0, flagcase4.size(), flagcase4) ||
-    !currLine.compare(0, flagcase5.size(), flagcase5) || !currLine.compare(0, flagcase6.size(), flagcase6) ||
+    (!currLine.compare(0, flagcase6.size(), flagcase6) && currLine.find("=") != std::string::npos)||
     !currLine.compare(0, flagcase7.size(), flagcase7) || !currLine.compare(0, flagcase8.size(), flagcase8) ||
     !currLine.compare(0, flagcase9.size(), flagcase9) || !currLine.compare(0, flagcase10.size(), flagcase10) ||
-    !currLine.compare(0, flagcase11.size(), flagcase11))
+    !currLine.compare(0, flagcase11.size(), flagcase11) || !currLine.compare(0, flagcase12.size(), flagcase12))
     && currLine.compare(currLine.size()-1, 1, ";")) 
     {
       flag = true;
-      //printf("%s\n", currLine.c_str());
+    }
+    if(currLine.find("if (") != std::string::npos)
+    {
+      ifflag = true;
     }
     if(currLine.compare("{") != 0 && currLine.compare("}") != 0)
     {
-    tempfile << currLine << "\n";
+      if(currLine.find("return") != std::string::npos && currLine.find(";") != std::string::npos 
+      && currLine.find("printf") == std::string::npos && currLine.find("err(") == std::string::npos 
+      && currLine.find("/") == std::string::npos) 
+      {
+        //printf("%s\n", currLine.c_str());
+        returnflag = true;
+        if (ifflag && !flag){
+        currLine = "{\nlogfile.open(\"log.txt\");\nlogfile << \"return\" << std::endl;\nlogfile.close();\n" + currLine + "}\n";
+        tempfile << currLine << "\n";
+        ifflag = false;
+        }
+        else if (!ifflag && !flag){
+        currLine = "logfile.open(\"log.txt\");\nlogfile << \"return\" << std::endl;\nlogfile.close();\n" + currLine;
+        tempfile << currLine << "\n";
+        }
+        else{
+        tempfile << currLine << "\n";
+        }
+      }
+      else{
+        if(currLine.find("{") != std::string::npos){
+          ifflag = false; 
+          tempfile << currLine << "\n";
+        }
+        else{
+          tempfile << currLine << "\n";
+        }
+      }
     }
     else if(currLine.compare("{") == 0 && !flag)
     {
-    currLine = currLine + "std::ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << std::endl;\nlogfile.close();\n";
-    tempfile << currLine << "\n";
+      currLine = currLine + "std::ofstream logfile;\nlogfile.open(\"log.txt\");\nlogfile << __func__ << std::endl;\nlogfile.close();\n";
+      tempfile << currLine << "\n";
+      ifflag = false;
     }
     else if(currLine.compare("{") == 0 && flag)
     {
-    tempfile << currLine << "\n";
+      ifflag = false;
+      tempfile << currLine << "\n";
     }
     else if(currLine.compare(0, 1, "}") == 0 && !flag)
     {
-          currLine = "logfile.open(\"log.txt\");\nlogfile << \"return\" << std::endl;\nlogfile.close();\n" + currLine;
-          tempfile << currLine << "\n";
+      currLine = "logfile.open(\"log.txt\");\nlogfile << \"return\" << std::endl;\nlogfile.close();\n" + currLine;
+      tempfile << currLine << "\n";
     }
     else if(currLine.compare(0, 1, "}") == 0 && flag)
     {
-    tempfile << currLine << "\n";
-    flag = false;
+      tempfile << currLine << "\n";
+      flag = false;
+      returnflag = false;
+    }
+    else{
+      flag = false;
+      tempfile << currLine << "\n";
     }
 	}
 	tempfile.close();
