@@ -150,7 +150,7 @@ void exploreDirectory(string directory){
   dp = opendir(dirname);
 
   if (dp){
-    while (entry == readdir(dp)){ // for every entry in the directory
+    while (entry = readdir(dp)){ // for every entry in the directory
       string str(entry->d_name);
       if (entry->d_type == isFile && str.compare(str.size()-3, 3, "cpp") == 0){ // if it is a cpp file
       	string fileName = entry->d_name;
