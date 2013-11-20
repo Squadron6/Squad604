@@ -6,15 +6,23 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
-#include <Colourizer.h>
+//#include "/Users/SonikaPrakash/git/workspace/Squad604/GraphMaker/include/boost/unordered/unordered_map.hpp"
+//#include "/Users/SonikaPrakash/git/workspace/Squad604/GraphMaker/include/boost/tr1/tr1/unordered_map"
+//#include "/Users/SonikaPrakash/git/workspace/Squad604/GraphMaker/include/boost/tr1/detail/config_all.hpp"
+//#include "Colourizer.h"
 
 using namespace std;
+//#include <Colourizer.h>
 
 struct node {
     string node_name;
     string color;
+    int id;
     node* next;
 };
+
+//id count
+int id_count = 0;
 
 //stream to read from readfile
 ifstream infile;
@@ -47,7 +55,7 @@ void py_setup(){
     outfile << "import time" << endl << endl;   //used for a slower growth ie. time.sleep(6)
     outfile << "server = xmlrpclib.Server('" << server << "')" << endl;
     outfile << Graph << " = server.ubigraph" << endl;
-    outfile << Graph << ".clear()" << endl;
+    outfile << Graph << ".clear()" << endl << endl;
 }
 
 /* set node_ptr back to start */
@@ -79,20 +87,33 @@ void parse_file(){
         //create the to and from nodes
         node_ptr-> next = new node;     //The from node
         node_ptr->node_name = from;
+        node_ptr->id = id_count;
+        outfile << "G.new_vertex_w_id(" << id_count << ")" << endl;     //Create node 1
+        id_count++;
         node_ptr = node_ptr-> next;
         node_ptr-> next = 0;
-     
+        
         node_ptr-> next = new node;     //The to node
         node_ptr->node_name = to;
+        node_ptr->id = id_count;
+        outfile << "G.new_vertex_w_id(" << id_count << ")" << endl;     //Create node 2
+        
         node_ptr = node_ptr-> next;
         node_ptr-> next = 0;
-        //cout << "from: " << from_node->node_name << " to: " << to_node->node_name << endl;
+        
+        //Create the edges
+        outfile << "G.new_edge(" << (id_count-1) << "," << id_count << ")" << endl << endl;
+        
+        id_count++;
     }
     reset_node_ptr();
 }
 
 /* iterates through the nodes, starting from wherever the node_ptr is */
 void traverse_nodes(){
+    
+    
+    
     if(node_ptr != 0){
         while ( node_ptr-> next !=0) {
             cout << node_ptr->node_name << endl;
