@@ -5,6 +5,7 @@
 #include <stack>
 #include <cstring>
 #include <unordered_map>
+#include "DynamicReader.h"
 
 using namespace std;
 
