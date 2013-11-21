@@ -12,7 +12,7 @@
 
 using namespace std;
 
-struct node {
+struct node  {
     string node_name;
     string color;
     int id;
@@ -44,7 +44,7 @@ node* node_ptr;
 const char* readfile = "links.log";
 
 //the output python file name
-const char* writefile = "g.py";
+const char* writefile = "graph.py";
 
 /*setup the python file with nessesary libraries, server and graph. Clears
 everything from Ubigraph's canvas */
@@ -61,109 +61,62 @@ void reset_node_ptr(){
     node_ptr = start;
 }
 
-/* Takes in a .log file, reads each line and creates two nodes (to node and from node).
-Stores the nodes in a linked list, initializes list. DOES NOT ACCOUNT FOR DUPLICATES CURRENTLY */
-void parse_file(){
-    start = new node;
-    start->node_name = "Start: not method";
-    start->next = 0;
-    start->id = id_count;
-    node_ptr = start;
-    
-    //start reading infile
-    string current_line;
-    while (getline(infile, current_line)) {
-        //get the node names
-        string from;
-        string to;
-        std::istringstream string_stream(current_line);
-        string_stream >> from;
-        string_stream >> to;
-        cout << "from: " << from << " to: " << to << endl;
-        
-        if(node_ptr != 0 && node_ptr-> next !=0 ){
-            while ( node_ptr-> next !=0) {
-                cout << "in the loop!" << endl;
-                if(node_ptr->node_name != from){
-                    node_ptr = node_ptr->next;
-                        if( node_ptr-> next == 0 ){
-                            node_ptr-> next = new node;     //Create a new from node if not already in list
-                            node_ptr = node_ptr-> next;
-                            node_ptr->node_name = from;
-                            node_ptr->id = ++id_count;
-                            node_ptr->next = 0;
-                        }
-                }
-                if(node_ptr->node_name != to){
-                    node_ptr = node_ptr->next;
-                    if( node_ptr-> next == 0 ){
-                        node_ptr-> next = new node;     //Create a new to node if not already in list
-                        node_ptr = node_ptr-> next;
-                        node_ptr->node_name = from;
-                        node_ptr->id = ++id_count;
-                        node_ptr->next = 0;
-                    }
-                }
+/* iterates through the nodes, starting from wherever the node_ptr is add to python file*/
+void traverse_nodes(){
+       if(node_ptr != NULL){
+           cout << "node ptr not null..start traversing" << endl;
+        while ( node_ptr-> next != NULL ) {
+            cout << "node name: " << node_ptr->node_name << endl;
+           
+            //add node to python file
+            if (node_ptr->id > -1) { //make sure not to include start node
+                outfile << "G.new_vertex_w_id(" << node_ptr->id << ")" << endl;
+                outfile << "G.set_vertex_attribute(" << node_ptr->id << "," << "'color', '" << node_ptr-> color << "')" << endl;
             }
-            reset_node_ptr();
-            //cout << node_ptr-> node_name;
             
-        }else{
-            cout << "at end of list!" << endl;
-            node_ptr-> next = new node;     //Create a new from node if not already in list
-            node_ptr = node_ptr-> next;
-            node_ptr->node_name = from;
-            node_ptr->id = ++id_count;
-            node_ptr->next = 0;
-            reset_node_ptr();
+            //move to the next node
+            node_ptr = node_ptr->next;
         }
-/*
-        //create the to and from nodes
-        node_ptr-> next = new node;     //The from node
-        node_ptr->node_name = from;
-        node_ptr->id = id_count;
-        outfile << "G.new_vertex_w_id(" << id_count << ")" << endl;     //Create node 1
-        id_count++;
-        node_ptr = node_ptr-> next;
-        node_ptr-> next = 0;
-        
-        node_ptr-> next = new node;     //The to node
-        node_ptr->node_name = to;
-        node_ptr->id = id_count;
-        outfile << "G.new_vertex_w_id(" << id_count << ")" << endl;     //Create node 2
-        
-        node_ptr = node_ptr-> next;
-        node_ptr-> next = 0;
-        //Create the edges
-        outfile << "G.new_edge(" << (id_count-1) << "," << id_count << ")" << endl << endl;
-        
-        id_count++;
-*/
+         cout << "node name: " << node_ptr->node_name << endl << "sanity check complete" << endl;
     }
     reset_node_ptr();
 }
 
-/* iterates through the nodes, starting from wherever the node_ptr is */
-void traverse_nodes(){
-    if(node_ptr != 0){
-        while ( node_ptr-> next !=0) {
-            cout << node_ptr->node_name << endl;
-            node_ptr = node_ptr->next;
-        }
-        cout << node_ptr-> node_name;
-    }
+string get_color(string color){
+    
+    return color;
 }
 
-void get_unordered_map(){
-	//unordered_map<string, string> sample_RGB = convert_to_RGB(sample, find_max(sample), find_min(sample));
+/* KEEP creates linked list of nodes, sets node_ptr back to start */
+void create_nodes(unordered_map<string, string> map){
+    for ( auto it = map.begin(); it != map.end(); ++it ){
+        string name =  it->first;
+        string Color =  it->second;
+        //std::cout << " " << it->first << ":" << it->second;
+        
+        //create a new node, add it to linked list of nodes
+        node* start2;
+        start2 = new node;
+        start2->node_name = name;
+        start2->color = get_color(Color);
+        start2->id = id_count;
+        start2->next = NULL;
+        node_ptr->next = start2;
+        node_ptr = node_ptr->next;
+        id_count++;
+        cout << "**Creating linked list, the next node:" << node_ptr->node_name << " color:" << node_ptr->color <<  " id: " << node_ptr->id <<  endl;
+        
+    }
+    reset_node_ptr();
+    cout << "setting node ptr back to start: " << node_ptr->node_name <<endl;
 }
 
 int main () {
     
-    cout<< "static reader creating unordered map" << endl;
+    cout<< "**static reader creating unordered map" << endl;
     unordered_map<string, int> funcMap;
     funcMap = generate_ast("/Users/SonikaPrakash/Documents/CPSC*410/fish-shell/proc.cpp", "proc.cpp", funcMap);
-    cout << "done creating the map, now printing pairs.." << endl;
+    cout << "**done creating the map, now printing pairs..DOESN'T WORK using dummy" <<endl;
   
     //Dummy map
     unordered_map <string, int> dummy;
@@ -179,26 +132,57 @@ int main () {
     dummy["test10"] = 10;
     
     //This doesn not print anything when funcMap is passed in, I'm assuming the reason is that funcMap does not get filled by generate_ast, so I'm passing in a dummy map for now
-    std::cout << "dummy map contains:";
+    std::cout << "**dummy map contains:";
     for ( auto it = dummy.begin(); it != dummy.end(); ++it )
         std::cout << " " << it->first << ":" << it->second;
-    std::cout << std::endl;
+    std::cout << endl << endl;
     
     //Create the Colorizer hash map (again passing in dummy map, since funcMap doesnt seem to work)
     unordered_map<string, string> colored_map = convert_to_RGB(dummy, find_max(dummy), find_min(dummy));
-    //Contents of colored_map (this does work)
-    std::cout << "colored_map contains:";
+   
+    /* Contents of colored_map (this does work) */
+    //std::cout << "colored_map contains:";
     for ( auto it = colored_map.begin(); it != colored_map.end(); ++it )
-        std::cout << " " << it->first << ":" << it->second;
-    std::cout << std::endl;
+        //std::cout << " " << it->first << ":" << it->second;
+    //std::cout << std::endl;
+    
+    //initialize linked list
+    start = new node;
+    start->node_name = "start";
+    start->color = " ";
+    start->id = -1;
+    start->next = NULL;
+    node_ptr = start;
+    cout << "**Creating linked list, the start node: " << node_ptr->node_name <<endl;
+    
+    create_nodes(colored_map);
+    
+    //start creating python script for ubigraph
+    outfile.open(writefile);
+    cout << "creating python script" << endl;
+    py_setup();
+    //sanity check: have nodes been created?
+    cout << "sanity check: can we traverse nodes?" << endl;
+    traverse_nodes();
+    
+    outfile.close();
+    cout << "finished creating python script" << endl;
     
     //infile.open(readfile);
-    //outfile.open(writefile);
-    //py_setup();
     //parse_file();
     //traverse_nodes();
     //infile.close();
-    //outfile.close();
-  return 0;
+    
+return 0;
 
 }
+
+/*
+ 
+g++ -c -std=c++11 Colourizer.cpp
+g++ -c -std=c++11 StaticReader.cpp
+g++ -c -std=c++11 main.cpp
+g++ -o final main.o StaticReader.o Colourizer.o
+./final
+ 
+*/
