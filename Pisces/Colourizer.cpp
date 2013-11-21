@@ -1,11 +1,12 @@
 #include <unordered_map>
 #include <iostream>
+#include <cmath>
 #include <string>
 #include <sstream>
 #include "Colourizer.h"
 #include <iomanip>
 
-//using namespace std;
+using namespace std;
 
 // Member variables
 int RGB_converter = 510;
@@ -26,7 +27,7 @@ int find_max(std::unordered_map<string, int> input)
 // Obtain the min number of occurences
 int find_min(std::unordered_map<string, int> input)
 {
-    int min = numeric_limits<int>::max();
+    int min = 2^32-1;
     
     for (auto it = input.begin(); it != input.end(); ++it) {
         if (min > it->second) {
@@ -56,13 +57,13 @@ unordered_map<string, string> convert_to_RGB(std::unordered_map<string, int> inp
         if ((510.0 * buffer) > 255.0) {
             
             // The colour changes from Yellow to Red
-            temp = (int) round(16776960 - ((int)(510 * buffer - 255)) * 256);
+            temp = (int) floor((16776960 - ((int)(510 * buffer - 255)) * 256)-.5);
             RGB_value << "0x" << setw(6) << std::setfill('0') << std::hex << temp;
         }
         else {
             
             // The colour changes from Green to Yellow
-            temp = (int) round(((int) (510 * buffer)) * 65536 + 65280);
+            temp = (int) floor((((int) (510 * buffer)) * 65536 + 65280)-.5);
             RGB_value << "0x" << setw(6) << std::setfill('0') << std::hex << temp;
         }
 //        cout << it->first << endl;
