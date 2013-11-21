@@ -25,30 +25,6 @@ unordered_map<string, int> static_parse(string dirName)
 	return funcMap;
 }
 
-void exploreDirectory(string directory){
-  unsigned char isFile = 0x8;
-  unsigned char isFolder = 0x4;
-  DIR *dp;
-  struct dirent *entry;
-  const char *dirname = directory.c_str(); //path of directory to read
-  dp = opendir(dirname);
-
-  if (dp){
-    while (entry = readdir(dp)){ // for every entry in the directory
-      string str(entry->d_name);
-      if (entry->d_type == isFile && str.compare(str.size()-3, 3, "cpp") == 0){ // if it is a cpp file
-        string fileName = entry->d_name;
-        string dirNames = dirname;
-        string fullName = dirNames+"/"+ fileName;
-      	cout << fullName << " " << fileName << endl;
-	}
-      else if (entry->d_type == isFolder && str!="." && str!=".."){ // if it's a folder, not current or parent
-        exploreDirectory(str);
-      }
-    }
-  }
-}
-
 unordered_map<string, int> generate_ast(string fullName, string fileName, unordered_map<string,int> functionMap)
 {
 	unordered_map<string, int> currentMap = functionMap;
@@ -152,11 +128,38 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 	return currentMap;
 }
 
+void exploreDirectory(string directory){
+  unsigned char isFile = 0x8;
+  unsigned char isFolder = 0x4;
+  DIR *dp;
+  struct dirent *entry;
+  const char *dirname = directory.c_str(); //path of directory to read
+  unordered_map<string, int> funcMap;
+        dp = opendir(dirname);
+
+  if (dp){
+    while (entry = readdir(dp)){ // for every entry in the directory
+      string str(entry->d_name);
+      if (entry->d_type == isFile && str.compare(str.size()-3, 3, "cpp") == 0){ // if it is a cpp file
+        string fileName = entry->d_name;
+        string dirNames = dirname;
+        string fullName = dirNames+"/"+ fileName;
+        cout << fullName << " " << fileName << endl;
+        funcMap = generate_ast(fullName, fileName, funcMap);
+        }
+      else if (entry->d_type == isFolder && str!="." && str!=".."){ // if it's a folder, not current or parent
+        exploreDirectory(str);
+      }
+    }
+  }
+}
+
+
 int main(void)
 {
 
 	exploreDirectory("../codeBase/fish-shell-master");
-	unordered_map<string, int> funcMap;
+unordered_map<string, int> funcMap;
 
 	string test = "echo test this";
 	system(test.c_str());
