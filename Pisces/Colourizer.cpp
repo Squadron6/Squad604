@@ -5,13 +5,13 @@
 #include "Colourizer.h"
 #include <iomanip>
 
-using namespace std;
+//using namespace std;
 
 // Member variables
 int RGB_converter = 510;
 
 // Obtain the max number of occurrences
-static int find_max(std::unordered_map<string, int> input)
+int find_max(std::unordered_map<string, int> input)
 {
     int max = 0;
     
@@ -24,9 +24,9 @@ static int find_max(std::unordered_map<string, int> input)
 }
 
 // Obtain the min number of occurences
-static int find_min(std::unordered_map<string, int> input)
+int find_min(std::unordered_map<string, int> input)
 {
-    int min = std::numeric_limits<int>::max();
+    int min = numeric_limits<int>::max();
     
     for (auto it = input.begin(); it != input.end(); ++it) {
         if (min > it->second) {
@@ -38,7 +38,7 @@ static int find_min(std::unordered_map<string, int> input)
 
 // Given a Hashmap which stores a set of a function and its number of occurrences, calculate appropirate
 // RGB values and store them in a new Hashmap.
-static std::unordered_map<string, string> convert_to_RGB(std::unordered_map<string, int> input, int max, int min) {
+unordered_map<string, string> convert_to_RGB(std::unordered_map<string, int> input, int max, int min) {
     
     std::unordered_map<string, string> colour_map;
     std::stringstream RGB_value;
@@ -56,13 +56,13 @@ static std::unordered_map<string, string> convert_to_RGB(std::unordered_map<stri
         if ((510.0 * buffer) > 255.0) {
             
             // The colour changes from Yellow to Red
-            temp = (int) std::round(16776960 - ((int)(510 * buffer - 255)) * 256);
+            temp = (int) round(16776960 - ((int)(510 * buffer - 255)) * 256);
             RGB_value << "0x" << setw(6) << std::setfill('0') << std::hex << temp;
         }
         else {
             
             // The colour changes from Green to Yellow
-            temp = (int) std::round(((int) (510 * buffer)) * 65536 + 65280);
+            temp = (int) round(((int) (510 * buffer)) * 65536 + 65280);
             RGB_value << "0x" << setw(6) << std::setfill('0') << std::hex << temp;
         }
 //        cout << it->first << endl;
@@ -72,7 +72,7 @@ static std::unordered_map<string, string> convert_to_RGB(std::unordered_map<stri
     return colour_map;
 }
 
-int main() {
+//int main() {
 //    //TEST CASES
 //
 //    unordered_map <string, int> sample;
@@ -91,4 +91,4 @@ int main() {
 //    unordered_map<string, string> sample_RGB = convert_to_RGB(sample, find_max(sample), find_min(sample));
 //
 //    //cout << sample_RGB["test4"] << endl;
-}
+//}

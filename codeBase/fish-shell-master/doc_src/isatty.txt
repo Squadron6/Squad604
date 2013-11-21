@@ -1,0 +1,14 @@
+\section isatty isatty - test if the specified file descriptor is a tty
+
+\subsection isatty-synopsis Synopsis
+ <tt>isatty [FILE DESCRIPTOR]</tt>
+
+\subsection isatty-description Description
+<tt>isatty</tt> tests if a file descriptor is a tty.
+
+<tt>FILE DESCRIPTOR</tt> may be either the number of a file descriptor, or one of the
+strings <tt>stdin</tt>, \c stdout and <tt>stderr</tt>.
+
+If the specified file descriptor is a tty, the exit status of the command is
+zero. Otherwise, it is non-zero.
+

@@ -71,7 +71,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 		istringstream buffer(currline);
 		istream_iterator<string> beg(buffer), end;
 		vector<string> tokens(beg, end);
-			
+		cout << currline << endl;		
 		for(auto& s: tokens)
 		{
 			if(s.find("(") != string::npos)

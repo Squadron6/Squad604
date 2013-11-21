@@ -1,0 +1,976 @@
+
+# Copyright (C) 2005-2006 Axel Liljencrantz
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+
+#
+# Makefile.  Generated from Makefile.in by configure.
+#
+
+#
+# Makefile for the fish shell. Can build fish and associated
+# applications, install them, recalculate dependencies and also create
+# binary distributions in tar.bz2, tar.gz and rpm formats.
+#
+
+#
+# The fish buildprocess is quite complex. Do not stare directly into
+# the Makefile. Doing so may cause nausea, dizziness and
+# hallucinations.
+#
+
+# Used by docdir
+PACKAGE_TARNAME = fish
+
+#
+# Programs
+#
+
+CXX := g++
+INSTALL:=/usr/bin/install -c
+
+
+#
+# Installation directories
+#
+
+prefix = /usr/local
+exec_prefix = ${prefix}
+datarootdir = ${prefix}/share
+datadir = ${datarootdir}
+bindir = ${exec_prefix}/bin
+mandir = ${datarootdir}/man
+sysconfdir = ${prefix}/etc
+docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
+localedir = ${datarootdir}/locale
+optbindirs =  /usr/local/bin
+
+#
+# Various flags
+#
+
+MACROS = -DLOCALEDIR=\"$(localedir)\" -DPREFIX=L\"$(prefix)\" -DDATADIR=L\"$(datadir)\" -DSYSCONFDIR=L\"$(sysconfdir)\" -DBINDIR=L\"$(bindir)\"
+CXXFLAGS = -g -O2 -I/usr/local/include/ -D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE=1 -D_ISO99_SOURCE=1  $(MACROS) $(EXTRA_CXXFLAGS)
+LDFLAGS =   -L/usr/local/lib/
+LDFLAGS_FISH = ${LDFLAGS} -lncurses -lpthread  
+LDFLAGS_FISH_INDENT = ${LDFLAGS} -lncurses -lpthread 
+LDFLAGS_FISH_PAGER = ${LDFLAGS} -lncurses -lpthread 
+LDFLAGS_FISHD = ${LDFLAGS} -lncurses -lpthread 
+LDFLAGS_MIMEDB = ${LDFLAGS} -lncurses -lpthread 
+
+#
+# Set to 1 if we have gettext
+#
+
+HAVE_GETTEXT=
+
+#
+# Set to 1 if we have doxygen
+#
+
+HAVE_DOXYGEN=0
+
+#
+#Additional .cpp files used by common.o. These also have a corresponding
+#.h file.
+#
+
+COMMON_FILES := util.cpp fallback.cpp
+
+
+#
+# All objects that the system needs to build fish, except fish.o
+#
+
+FISH_OBJS := function.o builtin.o complete.o env.o exec.o expand.o		\
+	highlight.o history.o kill.o parser.o proc.o reader.o sanity.o		\
+	tokenizer.o wildcard.o wgetopt.o wutil.o input.o output.o intern.o	\
+	env_universal.o env_universal_common.o input_common.o event.o		\
+	signal.o io.o parse_util.o common.o screen.o path.o autoload.o		\
+	parser_keywords.o iothread.o color.o postfork.o	\
+	builtin_test.o
+
+FISH_INDENT_OBJS := fish_indent.o print_help.o common.o	\
+parser_keywords.o wutil.o tokenizer.o
+
+#
+# Additional files used by builtin.o
+#
+
+BUILTIN_FILES := builtin_set.cpp builtin_commandline.cpp	\
+	builtin_ulimit.cpp builtin_complete.cpp builtin_jobs.cpp	\
+	builtin_set_color.cpp builtin_printf.cpp
+
+
+#
+# All objects that the system needs to build fish_pager
+#
+
+FISH_PAGER_OBJS := fish_pager.o output.o wutil.o 		\
+	input_common.o env_universal.o env_universal_common.o common.o	\
+	print_help.o iothread.o color.o
+
+
+#
+# All objects that the system needs to build fish_tests
+#
+
+FISH_TESTS_OBJS := $(FISH_OBJS) fish_tests.o
+
+
+#
+# All objects that the system needs to build fishd
+#
+
+FISHD_OBJS := fishd.o env_universal_common.o wutil.o print_help.o	\
+	common.o
+
+
+#
+# All objects needed to build mimedb
+#
+
+MIME_OBJS := mimedb.o print_help.o xdgmimealias.o xdgmime.o				\
+	xdgmimeglob.o xdgmimeint.o xdgmimemagic.o xdgmimeparent.o wutil.o	\
+	common.o
+
+
+#
+# Files containing user documentation
+#
+
+#
+# These files are the source files, they contain a few @FOO@-style substitutions
+#
+
+HDR_FILES_SRC := doc_src/index.hdr.in doc_src/commands.hdr.in doc_src/design.hdr doc_src/license.hdr doc_src/faq.hdr
+
+
+#
+# These are the generated result files
+#
+
+HDR_FILES := $(HDR_FILES_SRC:.hdr.in=.hdr)
+
+# Use a pattern rule so that Make knows to only issue one invocation
+# per http://www.gnu.org/software/make/manual/make.html#Pattern-Intro
+
+# Internalized scripts are currently disabled.
+# For now, we just generate empty arrays.
+# To generate them again, you would run this:
+# ./internalize_scripts.py share/functions/*.fish share/completions/*.fish
+
+
+#
+# Files containing documentation for external commands.
+#
+
+HELP_SRC := $(wildcard doc_src/*.txt)
+
+
+#
+# Files in the test directory
+#
+
+TEST_IN := $(wildcard tests/test*.in)
+
+
+#
+# Files that should be added to the tar archives
+#
+
+#
+# Files in ./doc_src/
+#
+
+DOC_SRC_DIR_FILES := $(HDR_FILES_SRC) $(HELP_SRC)
+
+
+#
+# Files in ./
+#
+
+MAIN_DIR_FILES_UNSORTED := Doxyfile Doxyfile.user Doxyfile.help					\
+    Makefile.in configure configure.ac config.h.in install-sh					\
+    key_reader.cpp $(MIME_OBJS:.o=.h)											\
+    $(MIME_OBJS:.o=.cpp) $(FISH_OBJS:.o=.h) $(BUILTIN_FILES)					\
+    $(COMMON_FILES) $(COMMON_FILES:.cpp=.h) $(FISH_OBJS:.o=.cpp)				\
+    fish.spec.in INSTALL README user_doc.head.html								\
+    ChangeLog config.sub config.guess fish_tests.cpp fish.cpp fish_pager.cpp	\
+    fishd.cpp make_vcs_completions.fish $(FISH_INDENT_OBJS:.o=.cpp)
+
+#
+# The sorting is not meaningful in itself, but it has the side effect
+# of removing duplicates, which means there will be fewer warnings
+# during building.
+#
+
+MAIN_DIR_FILES := $(sort $(MAIN_DIR_FILES_UNSORTED))
+
+
+#
+# Files in ./tests/
+#
+
+TESTS_DIR_FILES := $(TEST_IN) $(TEST_IN:.in=.out) $(TEST_IN:.in=.err)	\
+	$(TEST_IN:.in=.status) tests/test.fish tests/gen_output.fish
+
+
+#
+# Files in ./share/completions/
+#
+
+COMPLETIONS_DIR_FILES := $(wildcard share/completions/*.fish)
+
+
+#
+# Files in ./share/functions/
+#
+
+FUNCTIONS_DIR_FILES := $(wildcard share/functions/*.fish)
+
+
+#
+# Programs to install
+#
+
+PROGRAMS := fish mimedb fish_pager fishd fish_indent
+
+#
+# Manual pages to install
+#
+
+MANUALS := $(addsuffix .1, $(addprefix share/man/man1/,	\
+	$(PROGRAMS)))
+
+
+#
+# All translation message catalogs
+#
+
+TRANSLATIONS_SRC := $(wildcard po/*.po)
+TRANSLATIONS := $(TRANSLATIONS_SRC:.po=.gmo)
+
+#
+# If Doxygen is not available, don't attempt to build the documentation
+#
+
+ifeq ($(HAVE_DOXYGEN), 1)
+  user_doc=user_doc
+  share_man=share/man
+else
+  user_doc=
+  share_man=
+endif
+
+#
+# Make everything needed for installing fish
+#
+
+all: $(PROGRAMS) $(user_doc) $(share_man) $(TRANSLATIONS)
+	@echo fish has now been built.
+	@echo Use \'$(MAKE) install\' to install fish.
+.PHONY: all
+
+#
+# Pull version information
+#
+
+FISH-BUILD-VERSION-FILE: FORCE
+	@./build_tools/git_version_gen.sh
+-include FISH-BUILD-VERSION-FILE
+CPPFLAGS += -DFISH_BUILD_VERSION=\"$(FISH_BUILD_VERSION)\"
+.PHONY: FORCE
+env.o fish.o fish_indent.o fish_pager.o fishd.o mimedb.o: FISH-BUILD-VERSION-FILE
+
+
+#
+# These dependencies make sure that autoconf and configure are run
+# when the source code for the build configuration has changed.
+#
+
+configure: configure.ac
+	./config.status --recheck
+
+Makefile: Makefile.in configure
+	./config.status
+
+
+#
+# Build fish with some debug flags specified. This is GCC specific,
+# and should only be used when debuging fish.
+#
+
+prof: EXTRA_CXXFLAGS += -pg
+prof: LDFLAGS += -pg
+prof: all
+.PHONY: prof
+
+#
+# User documentation, describing the features of the fish shell.
+#
+
+# Depend on the sources (*.hdr.in) and manually make the
+# intermediate *.hdr and doc.h files if needed
+# The sed command deletes everything including and after the first -, for simpler version numbers
+
+user_doc: $(HDR_FILES_SRC) Doxyfile.user user_doc.head.html $(HELP_SRC) doc.h $(HDR_FILES)
+	(cat Doxyfile.user ; echo PROJECT_NUMBER=$(FISH_BUILD_VERSION) | sed "s/-.*//") | doxygen - && touch user_doc
+
+
+#
+# Source code documentation. Also includes user documentation.
+#
+
+doc: *.h *.cpp doc.h Doxyfile
+	(cat Doxyfile ; echo PROJECT_NUMBER=$(FISH_BUILD_VERSION)) | doxygen - ;
+
+
+#
+# PDF version of the source code documentation.
+#
+
+doc/refman.pdf: doc
+	cd doc/latex;
+	make;
+	mv refman.pdf ..;
+	cd ../..;
+	rm -r doc/latex;
+
+
+#
+# This target runs both the low level code tests and the high level script tests.
+#
+
+test: $(PROGRAMS) fish_tests
+	./fish_tests; cd tests; ../fish <test.fish;
+.PHONY: test
+
+
+#
+# commands.hdr collects documentation on all commands, functions and
+# builtins
+#
+
+doc_src/commands.hdr:$(HELP_SRC) doc_src/commands.hdr.in
+	-rm command_list.tmp $@
+	for i in `printf "%s\n" $(HELP_SRC)|sort`; do \
+		echo "<hr>" >>command_list.tmp; \
+		cat $$i >>command_list.tmp; \
+		echo >>command_list.tmp; \
+		echo >>command_list.tmp; \
+		echo "Back to <a href='index.html#toc-commands'>index</a>". >>command_list.tmp; \
+	done
+	mv command_list.tmp command_list.txt
+	cat $@.in | awk '{if ($$0 ~ /@command_list@/){ system("cat command_list.txt");} else{ print $$0;}}' >$@
+
+
+toc.txt: $(HDR_FILES:index.hdr=index.hdr.in)
+	-rm toc.tmp $@
+	for i in $(HDR_FILES:index.hdr=index.hdr.in); do\
+		NAME=`basename $$i .hdr`; \
+		NAME=`basename $$NAME .hdr.in`; \
+		sed <$$i >>toc.tmp -n \
+		-e 's,.*\\page *\([^ ]*\) *\(.*\)$$,- <a href="'$$NAME'.html" id="toc-'$$NAME'">\2</a>,p' \
+		-e 's,.*\\section *\([^ ]*\) *\(.*\)$$,  - <a href="'$$NAME'.html#\1">\2</a>,p'; \
+	done
+	mv toc.tmp $@
+
+doc_src/index.hdr: toc.txt doc_src/index.hdr.in
+	cat $@.in | awk '{if ($$0 ~ /@toc@/){ system("cat toc.txt");} else{ print $$0;}}' >$@
+
+
+#
+# doc.h is a compilation of the various snipptes of text used both for
+# the user documentation and for internal help functions into a single
+# file that can be parsed dy Doxygen to generate the user
+# documentation.
+#
+
+doc.h: $(HDR_FILES)
+	cat $(HDR_FILES) >$@
+
+#
+# This rule creates complete doxygen headers from each of the various
+# snipptes of text used both for the user documentation and for
+# internal help functions, that can be parsed to Doxygen to generate
+# the internal help function text.
+#
+
+%.doxygen:%.txt
+	echo  "/** \page " `basename $*` >$@;
+	cat $*.txt >>$@;
+	echo "*/" >>$@
+
+%: %.in
+	sed <$@.in >$@ \
+		-e "s,@sysconfdir\@,$(sysconfdir),g" \
+		-e "s,@datadir\@,$(datadir),g" \
+		-e "s,@docdir\@,$(docdir),g" \
+		-e "s|@configure_input\@|$@, generated from $@.in by the Makefile. DO NOT MANUALLY EDIT THIS FILE!|g" \
+		-e "s,@prefix\@,$(prefix),g" \
+		-e "s,@optbindirs\@,$(optbindirs),g"
+#-e "s,@\@,$(),"
+
+
+#
+# Compile translation files to binary format
+#
+
+%.gmo:
+	if test "$(HAVE_GETTEXT)" = 1; then \
+		msgfmt -o $*.gmo $*.po; \
+	fi
+
+
+#
+# Update existing po file or copy messages.pot
+#
+
+%.po:messages.pot
+	if test $(HAVE_GETTEXT) = 1;then \
+		if test -f $*.po; then \
+			msgmerge -U --backup=existing $*.po messages.pot;\
+		else \
+			cp messages.pot $*.po;\
+		fi; \
+	fi
+
+
+#
+# Create a template translation object
+#
+
+messages.pot: *.cpp *.h share/completions/*.fish share/functions/*.fish
+	if test $(HAVE_GETTEXT) = 1;then \
+		xgettext -k_ -kN_ *.cpp *.h -o messages.pot; \
+		if xgettext -j -k_ -kN_ -k--description -LShell share/completions/*.fish share/functions/*.fish -o messages.pot; then true; else \
+			echo "Your xgettext version is too old to build the messages.pot file"\
+			rm messages.pot\
+			false;\
+		fi; \
+	fi
+
+builtin.o: $(BUILTIN_FILES)
+
+common.o: $(COMMON_FILES)
+
+
+#
+# Generate the internal help functions by making doxygen create
+# man-pages. The convertion path looks like this:
+#
+#   .txt file
+#       ||
+#     (make)
+#       ||
+#       \/
+#  .doxygen file
+#       ||
+#    (doxygen)
+#       ||
+#       \/
+#    roff file
+#       ||
+# (__fish_print_help)
+#       ||
+#       \/
+#   formated text
+#   with escape
+#    sequences
+#
+#
+# There ought to be something simpler.
+#
+
+share/man: $(HELP_SRC)
+	-mkdir share/man
+	touch share/man
+	-rm -Rf share/man/man1
+	./build_tools/build_documentation.sh Doxyfile.help ./doc_src ./share
+
+#
+# The build rules for installing/uninstalling fish
+#
+
+#
+# Check for an incompatible installed fish version, and fail with an
+# error if found
+#
+
+check-uninstall:
+	if test -f $(DESTDIR)$(sysconfdir)/fish.d/fish_function.fish -o -f $(DESTDIR)$(sysconfdir)/fish.d/fish_complete.fish; then \
+		echo;\
+		echo ERROR;\
+		echo;\
+		echo An older fish installation using an incompatible filesystem hierarchy was detected;\
+		echo You must uninstall this fish version before proceeding;\
+		echo type \'$(MAKE) uninstall-legacy\' to uninstall these files,;\
+		echo or type \'$(MAKE) force-install\' to force installation.;\
+		echo The latter may result in a broken installation.;\
+		echo;\
+		false;\
+	fi;
+	if test -f $(DESTDIR)$(sysconfdir)/fish; then \
+		echo;\
+		echo ERROR;\
+		echo;\
+		echo An older fish installation using an incompatible filesystem hierarchy was detected;\
+		echo You must remove the file $(DESTDIR)$(sysconfdir)/fish before proceeding;\
+		echo type \'$(MAKE) uninstall-legacy\' to uninstall this file,;\
+		echo or remove it manually using \'rm $(DESTDIR)$(sysconfdir)/fish\'.;\
+		echo;\
+		false;\
+	fi;
+.PHONY: check-uninstall
+
+check-legacy-binaries:
+	@SEQLOC=$(prefix)/bin/seq;\
+	if test -f "$$SEQLOC" && grep -q '\(^#!/.*/fish\|^#!/usr/bin/env fish\)' "$$SEQLOC"; then\
+		echo "An outdated seq from a previous fish install was found. You should remove it with:";\
+		echo "    rm '$$SEQLOC'";\
+	fi;
+	@SETCOLOR_LOC=$(prefix)/bin/set_color;\
+	if test -x "$$SETCOLOR_LOC" && $$SETCOLOR_LOC -v 2>&1 >/dev/null | grep -q "^set_color, version "; then\
+		echo "An outdated set_color from a previous fish install was found. You should remove it with:";\
+		echo "    rm '$$SETCOLOR_LOC'";\
+	fi;
+	@true;
+.PHONY: check-legacy-binaries
+
+
+#
+# This check makes sure that the install-sh script is executable. The
+# darcs repo doesn't preserve the executable bit, so this needs to be
+# run after checkout.
+#
+
+install-sh:
+	if test -x $@; then true; else chmod 755 $@; fi
+.PHONY: install-sh
+
+
+#
+# Try to install after checking for incompatible installed versions.
+#
+
+install: all install-sh check-uninstall install-force check-legacy-binaries
+.PHONY: install
+
+#
+# Xcode install
+#
+xcode-install:
+	rm -Rf /tmp/fish_build;\
+	xcodebuild install DSTROOT=/tmp/fish_build;\
+	ditto /tmp/fish_build /
+.PHONY: xcode-install
+
+#
+# Force installation, even in presense of incompatible previous
+# version. This may fail.
+# These 'true' lines are to prevent installs from failing for (e.g.) missing man pages.
+#
+
+install-force: all install-translations
+	$(INSTALL) -m 755 -d $(DESTDIR)$(bindir)
+	for i in $(PROGRAMS); do\
+		$(INSTALL) -m 755 $$i $(DESTDIR)$(bindir) ; \
+		true ;\
+	done;
+	$(INSTALL) -m 755 -d $(DESTDIR)$(sysconfdir)/fish
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/fish
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/fish/completions
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/fish/functions
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/fish/man/man1
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/fish/tools
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/fish/tools/web_config
+	$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/fish/tools/web_config/sample_prompts
+	$(INSTALL) -m 644 etc/config.fish                  $(DESTDIR)$(sysconfdir)/fish/
+	$(INSTALL) -m 644 share/config.fish                $(DESTDIR)$(datadir)/fish/
+	for i in $(COMPLETIONS_DIR_FILES:%='%'); do \
+		$(INSTALL) -m 644 $$i $(DESTDIR)$(datadir)/fish/completions/; \
+		true; \
+	done;
+	for i in $(FUNCTIONS_DIR_FILES:%='%'); do \
+		$(INSTALL) -m 644 $$i $(DESTDIR)$(datadir)/fish/functions/; \
+		true; \
+	done;
+	for i in share/man/man1/*.1; do \
+		$(INSTALL) -m 644 $$i $(DESTDIR)$(datadir)/fish/man/man1/; \
+		true; \
+	done;
+	for i in share/tools/*.py; do\
+		$(INSTALL) -m 755 $$i $(DESTDIR)$(datadir)/fish/tools/; \
+		true; \
+	done;
+	for i in share/tools/web_config/*; do\
+		$(INSTALL) -m 644 $$i $(DESTDIR)$(datadir)/fish/tools/web_config/; \
+		true; \
+	done;
+	for i in share/tools/web_config/sample_prompts/*.fish; do\
+		$(INSTALL) -m 644 $$i $(DESTDIR)$(datadir)/fish/tools/web_config/sample_prompts/; \
+		true; \
+	done;
+	for i in share/tools/web_config/*.py; do\
+		$(INSTALL) -m 755 $$i $(DESTDIR)$(datadir)/fish/tools/web_config/; \
+		true; \
+	done;
+
+	$(INSTALL) -m 755 -d $(DESTDIR)$(docdir)
+	for i in user_doc/html/* ChangeLog; do \
+		if test -f $$i; then \
+			$(INSTALL) -m 644 $$i $(DESTDIR)$(docdir); \
+		fi; \
+	done;
+	$(INSTALL) -m 755 -d $(DESTDIR)$(mandir)/man1
+	for i in $(MANUALS); do \
+		$(INSTALL) -m 644 $$i $(DESTDIR)$(mandir)/man1/; \
+		true; \
+	done;
+	@echo fish is now installed on your system.
+	@echo To run fish, type \'fish\' in your terminal.
+	@echo
+	@if type chsh &> /dev/null; then \
+		echo To use fish as your login shell:; \
+		grep -q -- "$(DESTDIR)$(bindir)/fish" /etc/shells || echo \* add the line \'$(DESTDIR)$(bindir)/fish\' to the file \'/etc/shells\'.; \
+		echo \* use the command \'chsh -s $(DESTDIR)$(bindir)/fish\'.; \
+		echo; \
+	fi;
+	@echo To set your colors, run \'fish_config\'
+	@echo To scan your man pages for completions, run \'fish_update_completions\'
+	@echo To autocomplete command suggestions press Ctrl + F or right arrow key.
+	@echo
+	@echo Have fun!
+.PHONY: install-force
+
+
+#
+# Uninstall this fish version
+#
+
+uninstall: uninstall-translations
+	-for i in $(PROGRAMS); do \
+		rm -f $(DESTDIR)$(bindir)/$$i; \
+	done;
+	-rm -rf $(DESTDIR)$(sysconfdir)/fish
+	-if test -d $(DESTDIR)$(datadir)/fish; then \
+		rm -r $(DESTDIR)$(datadir)/fish; \
+	fi
+	-if test -d $(DESTDIR)$(docdir); then \
+		rm -rf $(DESTDIR)$(docdir);\
+	fi
+	-for i in $(MANUALS); do \
+		rm -rf $(DESTDIR)$(mandir)/man1/`basename $$i`*; \
+	done;
+.PHONY: uninstall
+
+
+#
+# Uninstall an older fish release. This is not the default uninstall
+# since there is a slight chance that it removes a file put in place by
+# the sysadmin. But if 'make install' detects a file confligt, it
+# suggests using this target.
+#
+
+uninstall-legacy: uninstall
+	-rm -f $(DESTDIR)$(sysconfdir)/fish.d/fish_interactive.fish
+	-rm -f $(DESTDIR)$(sysconfdir)/fish.d/fish_complete.fish
+	-rm -f $(DESTDIR)$(sysconfdir)/fish.d/fish_function.fish
+	-rm -f $(DESTDIR)$(sysconfdir)/fish/fish_inputrc
+	-if test -d $(DESTDIR)$(sysconfdir)/fish.d/completions; then \
+		for i in $(COMPLETIONS_DIR_FILES); do \
+			basename=`basename $$i`; \
+			if test -f $(DESTDIR)$(sysconfdir)/fish.d/completions/$$basename; then \
+				rm $(DESTDIR)$(sysconfdir)/fish.d/completions/$$basename; \
+			fi; \
+		done; \
+	fi;
+	-rmdir $(DESTDIR)$(sysconfdir)/fish.d/completions
+	-rmdir $(DESTDIR)$(sysconfdir)/fish.d
+	-rm $(DESTDIR)$(sysconfdir)/fish
+	@echo The previous fish installation has been removed.
+.PHONY: uninstall-legacy
+
+install-translations: $(TRANSLATIONS)
+	if test $(HAVE_GETTEXT) = 1; then \
+		for i in $(TRANSLATIONS); do \
+			$(INSTALL) -m 755 -d $(DESTDIR)$(datadir)/locale/`basename $$i .gmo`/LC_MESSAGES; \
+			$(INSTALL) -m 644 $$i $(DESTDIR)$(datadir)/locale/`basename $$i .gmo`/LC_MESSAGES/fish.mo; \
+			echo $(DESTDIR)$(datadir)/locale/`basename $$i .gmo`/LC_MESSAGES/fish.mo;\
+		done; \
+	fi;
+.PHONY: install-translations
+
+uninstall-translations:
+	if test $(HAVE_GETTEXT) = 1; then \
+		for i in $(TRANSLATIONS_SRC); do \
+			rm -f $(DESTDIR)$(datadir)/locale/*/LC_MESSAGES/fish.mo; \
+		done; \
+	fi
+.PHONY: uninstall-translations
+
+
+#
+# The build rules for all the commands
+#
+
+#
+# Build the fish program.
+#
+
+fish: $(FISH_OBJS) fish.o
+	$(CXX) $(FISH_OBJS) fish.o $(LDFLAGS_FISH) -o $@
+
+
+#
+# Build the fish_pager program.
+#
+
+fish_pager: $(FISH_PAGER_OBJS)
+	$(CXX) $(FISH_PAGER_OBJS) $(LDFLAGS_FISH_PAGER) -o $@
+
+
+#
+# Build the fishd program.
+#
+
+fishd: $(FISHD_OBJS)
+	$(CXX) $(FISHD_OBJS) $(LDFLAGS_FISHD) -o $@
+
+
+#
+# Build the fish_tests program.
+#
+
+fish_tests: $(FISH_TESTS_OBJS)
+	$(CXX) $(FISH_TESTS_OBJS) $(LDFLAGS_FISH) -o $@
+
+
+#
+# Build the mimedb program.
+#
+# mimedb does not need any libraries, so we don't use LDFLAGS here.
+#
+
+mimedb: $(MIME_OBJS)
+	$(CXX) $(MIME_OBJS) $(LDFLAGS_MIMEDB) -o $@
+
+
+#
+# Build the fish_indent program.
+#
+
+fish_indent: $(FISH_INDENT_OBJS)
+	$(CXX) $(FISH_INDENT_OBJS) $(LDFLAGS_FISH_INDENT) -o $@
+
+
+#
+# Neat little program to show output from terminal
+#
+
+key_reader: key_reader.o input_common.o common.o env_universal.o env_universal_common.o wutil.o iothread.o
+	$(CXX) key_reader.o input_common.o common.o env_universal.o env_universal_common.o wutil.o iothread.o $(LDFLAGS_FISH) -o $@
+
+
+#
+# Update dependencies
+#
+depend:
+	makedepend -fMakefile.in -Y *.cpp
+	./config.status
+.PHONY: depend
+
+#
+# Build the RPM spec file.
+#
+
+fish.spec: fish.spec.in
+	./config.status
+
+#
+# Cleanup targets
+#
+
+#
+# distclean should restore the tree to the state right after extracting a tarball.
+#
+
+distclean: clean
+	rm -f fish.spec
+	rm -f config.status config.log config.h Makefile
+.PHONY: distclean
+
+
+#
+# clean removes everything built by the makefile, but not things that
+# are created by the configure script.
+#
+
+# Don't delete the docs unless we have Doxygen installed
+# We provide pre-built docs in the tarball, and if they get
+# deleted we won't be able to regenerate them
+
+clean:
+	rm -f *.o doc.h doc.tmp doc_src/*.doxygen doc_src/*.cpp doc_src/*.o doc_src/commands.hdr
+	rm -f $(GENERATED_INTERN_SCRIPT_FILES)
+	rm -f tests/tmp.err tests/tmp.out tests/tmp.status tests/foo.txt
+	rm -f $(PROGRAMS) fish_tests key_reader
+	rm -f command_list.txt toc.txt
+	rm -f doc_src/index.hdr doc_src/commands.hdr
+	rm -f FISH-BUILD-VERSION-FILE
+	if test "$(HAVE_DOXYGEN)" = 1; then \
+		rm -rf doc user_doc share/man; \
+	fi
+	rm -f $(TRANSLATIONS)
+.PHONY: clean
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+autoload.o: config.h autoload.h common.h util.h lru.h wutil.h signal.h env.h
+autoload.o: exec.h proc.h io.h
+builtin.o: config.h signal.h fallback.h util.h wutil.h common.h builtin.h
+builtin.o: io.h function.h event.h complete.h proc.h parser.h reader.h env.h
+builtin.o: wgetopt.h sanity.h tokenizer.h wildcard.h expand.h input_common.h
+builtin.o: input.h intern.h exec.h highlight.h screen.h color.h parse_util.h
+builtin.o: autoload.h lru.h parser_keywords.h path.h history.h
+builtin.o: builtin_set.cpp builtin_commandline.cpp builtin_complete.cpp
+builtin.o: builtin_ulimit.cpp builtin_jobs.cpp builtin_printf.cpp
+builtin_commandline.o: config.h signal.h fallback.h util.h wutil.h common.h
+builtin_commandline.o: builtin.h io.h wgetopt.h reader.h complete.h proc.h
+builtin_commandline.o: parser.h event.h function.h tokenizer.h input_common.h
+builtin_commandline.o: input.h parse_util.h autoload.h lru.h
+builtin_complete.o: config.h signal.h fallback.h util.h wutil.h common.h
+builtin_complete.o: builtin.h io.h complete.h wgetopt.h parser.h proc.h
+builtin_complete.o: event.h function.h reader.h
+builtin_jobs.o: config.h fallback.h signal.h util.h wutil.h common.h
+builtin_jobs.o: builtin.h io.h proc.h parser.h event.h function.h wgetopt.h
+builtin_set.o: config.h signal.h fallback.h util.h wutil.h common.h builtin.h
+builtin_set.o: io.h env.h expand.h wgetopt.h proc.h parser.h event.h
+builtin_set.o: function.h
+builtin_test.o: config.h common.h util.h builtin.h io.h wutil.h proc.h
+builtin_test.o: signal.h
+builtin_ulimit.o: config.h fallback.h signal.h util.h builtin.h io.h common.h
+builtin_ulimit.o: wgetopt.h
+builtin_printf.o: wgetopt.h
+color.o: color.h config.h common.h util.h fallback.h signal.h
+common.o: config.h fallback.h signal.h util.h wutil.h common.h expand.h
+common.o: proc.h io.h wildcard.h parser.h event.h function.h complete.h
+common.o: util.cpp fallback.cpp
+complete.o: config.h signal.h fallback.h util.h tokenizer.h common.h
+complete.o: wildcard.h expand.h proc.h io.h parser.h event.h function.h
+complete.o: complete.h builtin.h env.h exec.h reader.h history.h wutil.h
+complete.o: intern.h parse_util.h autoload.h lru.h parser_keywords.h path.h
+env.o: config.h signal.h fallback.h util.h wutil.h common.h proc.h io.h env.h
+env.o: sanity.h expand.h history.h reader.h complete.h parser.h event.h
+env.o: function.h env_universal.h env_universal_common.h input.h
+env.o: input_common.h path.h
+env_universal.o: config.h signal.h fallback.h util.h common.h wutil.h
+env_universal.o: env_universal_common.h env_universal.h
+env_universal_common.o: config.h signal.h fallback.h util.h common.h wutil.h
+env_universal_common.o: env_universal_common.h
+event.o: config.h signal.h fallback.h util.h wutil.h common.h function.h
+event.o: event.h proc.h io.h parser.h
+exec.o: config.h signal.h fallback.h util.h iothread.h postfork.h common.h
+exec.o: proc.h io.h wutil.h exec.h parser.h event.h function.h builtin.h
+exec.o: env.h wildcard.h expand.h sanity.h parse_util.h autoload.h lru.h
+expand.o: config.h signal.h fallback.h util.h common.h wutil.h env.h proc.h
+expand.o: io.h parser.h event.h function.h expand.h wildcard.h exec.h
+expand.o: tokenizer.h complete.h parse_util.h autoload.h lru.h
+fallback.o: config.h fallback.h signal.h util.h
+fish.o: config.h signal.h fallback.h util.h common.h reader.h io.h complete.h
+fish.o: builtin.h function.h event.h wutil.h env.h sanity.h proc.h parser.h
+fish.o: expand.h intern.h exec.h output.h screen.h color.h history.h path.h
+fish_indent.o: config.h fallback.h signal.h util.h common.h wutil.h
+fish_indent.o: tokenizer.h print_help.h parser_keywords.h
+fish_pager.o: config.h signal.h fallback.h util.h wutil.h common.h complete.h
+fish_pager.o: output.h screen.h color.h input_common.h env_universal.h
+fish_pager.o: env_universal_common.h print_help.h
+fish_tests.o: config.h signal.h fallback.h util.h common.h proc.h io.h
+fish_tests.o: reader.h complete.h builtin.h function.h event.h autoload.h
+fish_tests.o: lru.h wutil.h env.h expand.h parser.h tokenizer.h output.h
+fish_tests.o: screen.h color.h exec.h path.h history.h highlight.h iothread.h
+fish_tests.o: postfork.h
+fishd.o: config.h signal.h fallback.h util.h common.h wutil.h
+fishd.o: env_universal_common.h path.h env.h print_help.h
+function.o: config.h signal.h wutil.h common.h util.h fallback.h function.h
+function.o: event.h proc.h io.h parser.h intern.h reader.h complete.h
+function.o: parse_util.h autoload.h lru.h parser_keywords.h env.h expand.h
+highlight.o: config.h signal.h fallback.h util.h wutil.h common.h highlight.h
+highlight.o: env.h screen.h color.h tokenizer.h proc.h io.h parser.h event.h
+highlight.o: function.h parse_util.h autoload.h lru.h parser_keywords.h
+highlight.o: builtin.h expand.h sanity.h complete.h output.h wildcard.h
+highlight.o: path.h history.h
+history.o: config.h fallback.h signal.h util.h sanity.h tokenizer.h common.h
+history.o: wutil.h history.h intern.h path.h env.h autoload.h lru.h
+history.o: iothread.h
+input.o: config.h signal.h fallback.h util.h wutil.h common.h reader.h io.h
+input.o: complete.h proc.h sanity.h input_common.h input.h parser.h event.h
+input.o: function.h env.h expand.h output.h screen.h color.h intern.h
+input_common.o: config.h fallback.h signal.h util.h common.h wutil.h
+input_common.o: input_common.h env_universal.h env_universal_common.h
+input_common.o: iothread.h
+intern.o: config.h fallback.h signal.h util.h wutil.h common.h intern.h
+io.o: config.h fallback.h signal.h util.h wutil.h common.h exec.h proc.h io.h
+iothread.o: config.h iothread.h common.h util.h signal.h
+key_reader.o: config.h common.h util.h fallback.h signal.h input_common.h
+kill.o: config.h signal.h fallback.h util.h wutil.h common.h kill.h proc.h
+kill.o: io.h sanity.h env.h exec.h path.h
+mimedb.o: config.h xdgmime.h fallback.h signal.h util.h print_help.h
+output.o: config.h signal.h fallback.h util.h wutil.h common.h expand.h
+output.o: output.h screen.h color.h highlight.h env.h
+parse_util.o: config.h fallback.h signal.h util.h wutil.h common.h
+parse_util.o: tokenizer.h parse_util.h autoload.h lru.h expand.h intern.h
+parse_util.o: exec.h proc.h io.h env.h wildcard.h
+parser.o: config.h signal.h fallback.h util.h common.h wutil.h proc.h io.h
+parser.o: parser.h event.h function.h parser_keywords.h tokenizer.h exec.h
+parser.o: wildcard.h expand.h builtin.h env.h reader.h complete.h sanity.h
+parser.o: env_universal.h env_universal_common.h intern.h parse_util.h
+parser.o: autoload.h lru.h path.h
+parser_keywords.o: config.h fallback.h signal.h common.h util.h
+parser_keywords.o: parser_keywords.h
+path.o: config.h fallback.h signal.h util.h common.h env.h wutil.h path.h
+path.o: expand.h
+postfork.o: signal.h postfork.h config.h common.h util.h proc.h io.h wutil.h
+postfork.o: iothread.h exec.h
+print_help.o: print_help.h
+proc.o: config.h signal.h fallback.h util.h wutil.h common.h proc.h io.h
+proc.o: reader.h complete.h sanity.h env.h parser.h event.h function.h
+proc.o: output.h screen.h color.h
+reader.o: config.h signal.h fallback.h util.h wutil.h common.h highlight.h
+reader.o: env.h screen.h color.h reader.h io.h complete.h proc.h parser.h
+reader.o: event.h function.h history.h sanity.h exec.h expand.h tokenizer.h
+reader.o: kill.h input_common.h input.h output.h iothread.h intern.h path.h
+reader.o: parse_util.h autoload.h lru.h
+sanity.o: config.h signal.h fallback.h util.h common.h sanity.h proc.h io.h
+sanity.o: history.h wutil.h reader.h complete.h kill.h
+screen.o: config.h fallback.h signal.h common.h util.h wutil.h output.h
+screen.o: screen.h color.h highlight.h env.h
+signal.o: config.h signal.h common.h util.h fallback.h wutil.h event.h
+signal.o: reader.h io.h complete.h proc.h
+tokenizer.o: config.h fallback.h signal.h util.h wutil.h common.h tokenizer.h
+util.o: config.h fallback.h signal.h util.h common.h wutil.h
+wgetopt.o: config.h wgetopt.h wutil.h common.h util.h fallback.h signal.h
+wildcard.o: config.h fallback.h signal.h util.h wutil.h common.h complete.h
+wildcard.o: wildcard.h expand.h reader.h io.h exec.h proc.h
+wutil.o: config.h fallback.h signal.h util.h common.h wutil.h
+xdgmime.o: xdgmime.h xdgmimeint.h xdgmimeglob.h xdgmimemagic.h xdgmimealias.h
+xdgmime.o: xdgmimeparent.h
+xdgmimealias.o: xdgmimealias.h xdgmime.h xdgmimeint.h
+xdgmimeglob.o: xdgmimeglob.h xdgmime.h xdgmimeint.h
+xdgmimeint.o: xdgmimeint.h xdgmime.h
+xdgmimemagic.o: xdgmimemagic.h xdgmime.h xdgmimeint.h
+xdgmimeparent.o: xdgmimeparent.h xdgmime.h xdgmimeint.h
