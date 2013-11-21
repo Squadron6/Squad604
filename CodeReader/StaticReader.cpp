@@ -34,13 +34,14 @@ void exploreDirectory(string directory){
   dp = opendir(dirname);
 
   if (dp){
-    while (entry == readdir(dp)){ // for every entry in the directory
+    while (entry = readdir(dp)){ // for every entry in the directory
       string str(entry->d_name);
       if (entry->d_type == isFile && str.compare(str.size()-3, 3, "cpp") == 0){ // if it is a cpp file
         string fileName = entry->d_name;
         string dirNames = dirname;
         string fullName = dirNames+"/"+ fileName;
-      }
+      	cout << fullName << " " << fileName << endl;
+	}
       else if (entry->d_type == isFolder && str!="." && str!=".."){ // if it's a folder, not current or parent
         exploreDirectory(str);
       }
@@ -85,12 +86,11 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 			break;
 			}
 		}
-		cout << currline << endl << lineCount << endl;
+		//cout << currline << endl << lineCount << endl;
 		}
 		if(currline.find("lvalue Function") != string::npos && funcLine > 0)
 		{
 		string found = currline.substr(currline.find("lvalue Function"));
-		cout << currline << endl;
 		istringstream buffer(found);
 		istream_iterator<string> beg(buffer), end;
 		vector<string> tokens(beg, end);
@@ -154,13 +154,15 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 
 int main(void)
 {
+
+	exploreDirectory("../codeBase/fish-shell-master");
 	unordered_map<string, int> funcMap;
 
 	string test = "echo test this";
 	system(test.c_str());
 	funcMap = generate_ast("../codeBase/fish-shell-master/reader.cpp", "reader.cpp", funcMap);
-	funcMap = generate_ast("../codeBase/fish-shell-master/proc.cpp" , "proc.cpp", funcMap);
+//	funcMap = generate_ast("../codeBase/fish-shell-master/proc.cpp" , "proc.cpp", funcMap);
 
-	for(auto& entry: funcMap)
-		cout << entry.first << " : " << entry.second << endl;
+//	for(auto& entry: funcMap)
+//		cout << entry.first << " : " << entry.second << endl;
 }
