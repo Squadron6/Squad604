@@ -7,7 +7,7 @@
 #include <sstream>
 #include <vector>
 #include <unordered_map>
-//#include "Colourizer.h"
+#include "Colourizer.h"
 #include "StaticReader.h"
 
 using namespace std;
@@ -164,9 +164,33 @@ int main () {
     unordered_map<string, int> funcMap;
     funcMap = generate_ast("/Users/SonikaPrakash/Documents/CPSC*410/fish-shell/proc.cpp", "proc.cpp", funcMap);
     cout << "done creating the map, now printing pairs.." << endl;
-    for(auto& entry: funcMap){
-		cout << entry.first << " : " << entry.second << endl;
-    }
+  
+    //Dummy map
+    unordered_map <string, int> dummy;
+    dummy["test1"] = 1;
+    dummy["test2"] = 2;
+    dummy["test3"] = 3;
+    dummy["test4"] = 4;
+    dummy["test5"] = 5;
+    dummy["test6"] = 6;
+    dummy["test7"] = 7;
+    dummy["test8"] = 8;
+    dummy["test9"] = 9;
+    dummy["test10"] = 10;
+    
+    //This doesn not print anything when funcMap is passed in, I'm assuming the reason is that funcMap does not get filled by generate_ast, so I'm passing in a dummy map for now
+    std::cout << "dummy map contains:";
+    for ( auto it = dummy.begin(); it != dummy.end(); ++it )
+        std::cout << " " << it->first << ":" << it->second;
+    std::cout << std::endl;
+    
+    //Create the Colorizer hash map (again passing in dummy map, since funcMap doesnt seem to work)
+    unordered_map<string, string> colored_map = convert_to_RGB(dummy, find_max(dummy), find_min(dummy));
+    //Contents of colored_map (this does work)
+    std::cout << "colored_map contains:";
+    for ( auto it = colored_map.begin(); it != colored_map.end(); ++it )
+        std::cout << " " << it->first << ":" << it->second;
+    std::cout << std::endl;
     
     //infile.open(readfile);
     //outfile.open(writefile);
