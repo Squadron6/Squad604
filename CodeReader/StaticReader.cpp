@@ -46,9 +46,10 @@ void exploreDirectory(string directory){
   }
 }
 
-void generate_ast(string fullName, string fileName)
+unordered_map<string, int> generate_ast(string fullName, string fileName, unordered_map<string,int> functionMap)
 {
-	string command = "clang++ -fsyntax-only -Xclang -ast-dump " + fullName + " > " + fileName + ".ast";
+	unordered_map<string, int> currentMap = functionMap;
+	string command = "clang -cc1 -ast-dump " + fullName + " > " + fileName + ".ast";
 	string astFile = fileName+".ast";
 	system(command.c_str());
 	ifstream infile;
@@ -79,15 +80,15 @@ void generate_ast(string fullName, string fileName)
 			}
 			currFuncName = s;
 			funcLine = lineCount;
-			cout << s << endl;
 			break;
 			}
 		}
-		//cout << currline << endl << lineCount << endl;
+		cout << currline << endl << lineCount << endl;
 		}
 		if(currline.find("lvalue Function") != string::npos && funcLine > 0)
 		{
 		string found = currline.substr(currline.find("lvalue Function"));
+		cout << currline << endl;
 		istringstream buffer(found);
 		istream_iterator<string> beg(buffer), end;
 		vector<string> tokens(beg, end);
@@ -99,19 +100,65 @@ void generate_ast(string fullName, string fileName)
 			s.erase(0,1);
 			s.erase(s.length()-1, 1);
 			astLog << currFuncName << " " << s << endl;
+			unordered_map<string, int>::const_iterator got = currentMap.find(s);
+			if(got == currentMap.end())
+			{
+				currentMap.insert(make_pair(s, 1));
+			}
+			else
+			{
+				int newCount = got->second + 1;
+				currentMap[s] = newCount;
+			}
 			break;
 			}
 		}
+		}
+		if(currline.find("bound member function type") != string::npos && funcLine > 0)
+		{
+		string found = currline.substr(currline.find(">'") + 2);
+		istringstream buffer(found);
+		istream_iterator<string> beg(buffer), end;
+		vector<string> tokens(beg,end);
+		
+		string functionName = tokens[0];
+		if(functionName.find(">") != string::npos)
+		{
+		functionName.erase(0,2);
+		}
+		if(functionName.find(".") != string::npos)
+		{
+		functionName.erase(0,1);
+		}
+		astLog << currFuncName << " " << functionName << endl;
+                unordered_map<string, int>::const_iterator got = currentMap.find(functionName);
+                if(got == currentMap.end())
+                        {
+                                currentMap.insert(make_pair(functionName, 1));
+                        }
+                        else
+                        {
+                                int newCount = got->second + 1;
+                                currentMap[functionName] = newCount;
+                        }
+		
 		}
 		lineCount++;
 		
 	}
 	astLog.close();
+	return currentMap;
 }
 
 int main(void)
 {
+	unordered_map<string, int> funcMap;
+
 	string test = "echo test this";
 	system(test.c_str());
-	generate_ast("../codeBase/fish-shell-master/proc.cpp" , "proc.cpp");
+	funcMap = generate_ast("../codeBase/fish-shell-master/reader.cpp", "reader.cpp", funcMap);
+	funcMap = generate_ast("../codeBase/fish-shell-master/proc.cpp" , "proc.cpp", funcMap);
+
+	for(auto& entry: funcMap)
+		cout << entry.first << " : " << entry.second << endl;
 }
