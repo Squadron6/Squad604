@@ -22,14 +22,12 @@ unordered_map<string, int> parse_log(string logfile)
 	while(!infile.eof())
 	{
 	getline(infile, currline);
-	cout<<"current line is: " << currline << " and string length is " << currline.length() << endl;
 	if(currline.compare("return") != 0)
 		{
 		unordered_map<string, int>::const_iterator got = funcMap.find(currline);
 		if(got==funcMap.end())
 			{
 			funcMap.insert(make_pair(currline,1));
-			//cout<<"adding: " << currline << " to map" << endl;
 			}
 		else
 			{
@@ -42,8 +40,11 @@ unordered_map<string, int> parse_log(string logfile)
 		{
 		string toFunc = functionStack.top();
 		functionStack.pop();
+		if(!functionStack.empty())
+		{
 		string fromFunc = functionStack.top();
 		outfile << fromFunc << " " << toFunc << "\n";
+		}
 		}
 	}
 	infile.close();
@@ -53,7 +54,7 @@ unordered_map<string, int> parse_log(string logfile)
 }
 
 
-/*
+
 int main(void)
 {
 	unordered_map<string, int> functionMap;
@@ -61,4 +62,4 @@ int main(void)
 	for(auto& x: functionMap)
 		cout<< x.first << ": " << x.second << endl;
 }
-*/
+
