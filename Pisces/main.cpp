@@ -16,6 +16,7 @@ struct node  {
     string node_name;
     string color;
     int id;
+    node* next_edge;
     node* next;
 };
 
@@ -127,22 +128,47 @@ void create_edges(){
         string_stream >> to;
         cout << "**from: " << from << " to: " << to << endl;
         
+        int id_from;
+        int id_to;
+        string name_from;
+        string name_to;
+        
+        
         if(node_ptr != NULL){
-            cout << "finding the node..." << endl;
             while ( node_ptr-> next != NULL ) {
                 if( node_ptr->node_name == from ){
-                    cout << "@@@ match found! node_ptr->name is: " << node_ptr->node_name << " and from is: " << from << endl;
+                    //cout << "@@@ match found! node_ptr->name is: " << node_ptr->node_name << " and from is: " << from << endl;
+                    id_from = node_ptr->id;
+                    name_from = node_ptr->node_name;
                     
+                }
+                if( node_ptr->node_name == to ){
+                    //cout << "@@@ match found! node_ptr->name is: " << node_ptr->node_name << " and to is: " << from << endl;
+                    id_to = node_ptr->id;
+                    name_to = node_ptr->node_name;
                     
                 }
                 node_ptr = node_ptr->next;
             }
             //make sure to take care of the last node here
-            if( node_ptr->node_name == from ){
-                cout << "@@@ match found! node_ptr->name is: " << node_ptr->node_name << " and from is: " << from << endl;
-            }
+                if( node_ptr->node_name == from ){
+                    //cout << "@@@ match found! node_ptr->name is: " << node_ptr->node_name << " and from is: " << from << endl;
+                    id_from = node_ptr->id;
+                    name_from = node_ptr->node_name;
+                }
+                if( node_ptr->node_name == to ){
+                    //cout << "@@@ match found! node_ptr->name is: " << node_ptr->node_name << " and to is: " << from << endl;
+                    id_to = node_ptr->id;
+                    name_to = node_ptr->node_name;
+                }
         }
-      reset_node_ptr();
+        reset_node_ptr();
+        cout << "@@@the nodes that were found - from: "<< name_from << " id:" << id_from <<" to: "<< name_to << " id:" << id_to << endl;
+        if( id_from != id_to){
+            //DOESNT TAKE INTO ACCOUNT RECURSION
+            //IF CALLS ARE MADE MORE THAN ONCE BETWEEN METHODS THEY GET CLOSER TOGETHER, DO WE WANT THAT???
+            outfile << "G.new_edge(" << (id_from) << "," << id_to << ")" << endl << endl;
+        }
     }
     
 }
@@ -216,8 +242,8 @@ int main () {
     create_edges();
     
     outfile.close();
-    cout << "finished creating python script" << endl;
     infile.close();
+    cout << "finished creating python script" << endl;
     
     
     //parse_file();
