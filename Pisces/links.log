@@ -1,6 +1,0 @@
-push_block env_push
-env_push mark_changed_exported
-env_push getpwuid
-push_block proc_init
-proc_init proc_push_interactive
-proc_push_interactive signal_set_handlers

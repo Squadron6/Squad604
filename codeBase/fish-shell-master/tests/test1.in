@@ -1,0 +1,117 @@
+#
+#Test aliases, loops, conditionals and some basic elements
+#
+
+for i in 1 2 #Comment on same line as command
+#Comment inside loop
+    for j in a b
+		#Double loop
+        echo $i$j
+	end;
+end
+
+# Bracket expansion
+echo x-{1}
+echo x-{1,2}
+echo foo-{1,2{3,4}}
+
+# Escpaed newlines
+echo foo\ bar
+echo foo\
+bar
+echo "foo\
+bar"
+echo 'foo\
+bar'
+
+for i in \
+    a b c
+    echo $i
+end
+
+
+# Simple alias tests
+
+function foo
+    echo >foo.txt $argv
+end
+
+foo hello
+
+cat foo.txt |read foo
+
+if test $foo = hello;
+  echo Test 2 pass
+else
+  echo Test 2 fail
+end
+
+function foo
+    printf 'Test %s' $1; echo ' pass'
+end
+
+foo 3
+
+for i in Test for continue break and switch builtins problems;
+	switch $i
+		case Test
+			printf "%s " $i
+		case "f??"
+			printf "%s " 3
+		case "c*"
+			echo pass
+		case break
+			continue
+			echo fail
+		case and
+			break
+			echo fail
+		case "*"
+			echo fail
+	end
+end
+
+set -l sta
+if eval true
+	if eval false
+		set sta fail
+	else
+		set sta pass
+	end
+else
+	set sta fail
+end
+echo Test 4 $sta
+
+function test_builtin_status
+	return 1
+end
+test_builtin_status
+if [ $status -eq 1 ]
+	set sta pass
+else
+	set sta fail
+end
+echo Test 5 $sta
+
+# Verify that we can turn stderr into stdout and then pipe it.
+# Note that the order here seems unspecified - 'errput' appears before 'output', why?
+echo Test redirections
+begin ; echo output ; echo errput 1>&2  ; end 2>&1 | tee /tmp/tee_test.txt ; cat /tmp/tee_test.txt
+
+# echo tests
+
+echo 'abc\ndef'
+echo -e 'abc\ndef'
+echo -e 'abc\zdef'
+echo -e 'abc\41def'
+echo -e 'abc\041def'
+echo -e 'abc\121def'
+echo -e 'abc\1212def'
+echo -e 'abc\cdef' # won't output a newline!
+echo ''
+
+echo -e Catch your breath
+
+echo -e 'abc\x21def'
+echo -e 'abc\x211def'

@@ -1,0 +1,17 @@
+#include <iostream>
+#include <stdio.h>
+#include <dirent.h>
+#include <fstream>
+#include <string>
+#include "Stack.h"
+
+using namespace std;
+
+int main(void)
+{
+	Stack queue;
+	queue.push("test");
+	string peek = queue.peek();
+	cout<<endl<<"peeked at: "<<peek<<endl;
+}
+
