@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include "Colourizer.h"
 #include "StaticReader.h"
+#include "DynamicReader.h"
 
 using namespace std;
 
@@ -43,6 +44,8 @@ node* node_ptr;
 
 //the input log file name
 const char* readfile = "astLog.txt";
+
+const char* readfile_dynamic = "log.txt";
 
 //the output python file name
 const char* writefile = "graph.py";
@@ -174,6 +177,32 @@ void create_edges(){
 }
 
 
+//After the initial static graph is made, this takes the function call frequency from dynamic stuff
+void recolor_nodes(unordered_map<string, string> map){
+    for ( auto it = map.begin(); it != map.end(); ++it ){
+        string func_name = it->first;
+        string color = it->second;
+        
+        if(node_ptr != NULL){
+            while ( node_ptr-> next != NULL ) {
+                if( func_name == node_ptr->node_name ){
+                    string color_hex = get_hex_color(color);
+                    outfile << "G.set_vertex_attribute(" << node_ptr->id << "," << "'color', '" << color_hex << "')" << endl;
+                }
+                node_ptr = node_ptr->next;
+            }
+        }
+        //take care of the last node in the linked list
+        if( func_name == node_ptr->node_name ){
+            string color_hex = get_hex_color(color);
+            outfile << "G.set_vertex_attribute(" << node_ptr->id << "," << "'color', '" << color_hex << "')" << endl;
+        }
+        //make node_ptr point to the start of the linked list again
+        reset_node_ptr();
+    }
+}
+
+
 int main () {
     
     cout<< "**static reader creating unordered map" << endl;
@@ -185,34 +214,13 @@ int main () {
     for ( auto it = funcMap.begin(); it != funcMap.end(); ++it )
         std::cout << " " << it->first << ":" << it->second;
     std::cout << endl << endl;
-    
-    /*
-    //Dummy map
-    unordered_map <string, int> dummy;
-    dummy["test1"] = 25;
-    dummy["test2"] = 1;
-    dummy["test3"] = 50;
-    dummy["test4"] = 1;
-    dummy["test5"] = 100;
-    dummy["test6"] = 1;
-    dummy["test7"] = 1;
-    dummy["test8"] = 75;
-    dummy["test9"] = 0;
-    dummy["test10"] = 1;
-    
-    //This doesn not print anything when funcMap is passed in, I'm assuming the reason is that funcMap does not get filled by generate_ast, so I'm passing in a dummy map for now
-    std::cout << "**dummy map contains:";
-    for ( auto it = dummy.begin(); it != dummy.end(); ++it )
-        std::cout << " " << it->first << ":" << it->second;
-    std::cout << endl << endl;
-    */
      
     //Create the Colorizer hash map (again passing in dummy map, since funcMap doesnt seem to work)
     unordered_map<string, string> colored_map = convert_to_RGB(funcMap, find_max(funcMap), find_min(funcMap));
    
     /* Contents of colored_map (this does work) */
     //std::cout << "colored_map contains:";
-    for ( auto it = colored_map.begin(); it != colored_map.end(); ++it )
+    //for ( auto it = colored_map.begin(); it != colored_map.end(); ++it )
         //std::cout << " " << it->first << ":" << it->second;
     //std::cout << std::endl;
     
@@ -225,7 +233,17 @@ int main () {
     node_ptr = start;
     cout << "**Creating linked list, the start node: " << node_ptr->node_name <<endl;
     
+    //this will be the static graph
     create_nodes(colored_map);
+    
+    //incase we don't start at the beginning of the node list, reset the node pointer
+    reset_node_ptr();
+    
+    
+    //start coloring the nodes according to the dynamic calls to methods
+    unordered_map<string, int> funcMap2;
+    funcMap2 = parse_log(readfile_dynamic);
+    unordered_map<string, string> colored_map_dynamic = convert_to_RGB(funcMap2, find_max(funcMap2), find_min(funcMap2));
     
     //start creating python script for ubigraph
     infile.open(readfile);      //use the log file to generate edges
@@ -240,6 +258,9 @@ int main () {
     
     //create edges between nodes
     create_edges();
+    
+    //this will be the dynamic runtime color added to the static graph
+    recolor_nodes(colored_map_dynamic);
     
     outfile.close();
     infile.close();
