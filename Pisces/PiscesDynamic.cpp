@@ -17,6 +17,7 @@ int main(int argc, char* argv[]){
   string fishconf = "(cd " + dirname + " && ./configure --prefix=$HOME)";
   string fishmake = "make install -C " + dirname;
   string fishrun = "fish";
+  //string fishrun = "fish script.sh";
 
   exploreDirectory(dirname);
   system(fishauto.c_str());

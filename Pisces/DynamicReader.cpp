@@ -52,11 +52,12 @@ unordered_map<string, int> parse_log(string logfile)
 	return funcMap;	
 }
 
+
 /*
 int main(void)
 {
 	unordered_map<string, int> functionMap;
-	functionMap = parse_log("test.log");
+	functionMap = parse_log("log.txt");
 	for(auto& x: functionMap)
 		cout<< x.first << ": " << x.second << endl;
 }
