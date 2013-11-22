@@ -128,7 +128,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 	return currentMap;
 }
 
-void exploreDirectory(string directory){
+unordered_map<string, int> exploreDirectory(string directory){
   unsigned char isFile = 0x8;
   unsigned char isFolder = 0x4;
   DIR *dp;
@@ -152,6 +152,7 @@ void exploreDirectory(string directory){
       }
     }
   }
+	return funcMap;
 }
 
 

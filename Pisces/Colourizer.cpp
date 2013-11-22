@@ -57,13 +57,13 @@ unordered_map<string, string> convert_to_RGB(std::unordered_map<string, int> inp
         if ((510.0 * buffer) > 255.0) {
             
             // The colour changes from Yellow to Red
-            temp = (int) floor((16776960 - ((int)(510 * buffer - 255)) * 256)-.5);
+            temp = (int) round(16776960 - ((int)(510 * buffer - 255)) * 256);
             RGB_value << "0x" << setw(6) << std::setfill('0') << std::hex << temp;
         }
         else {
             
             // The colour changes from Green to Yellow
-            temp = (int) floor((((int) (510 * buffer)) * 65536 + 65280)-.5);
+            temp = (int) round(((int) (510 * buffer)) * 65536 + 65280);
             RGB_value << "0x" << setw(6) << std::setfill('0') << std::hex << temp;
         }
 //        cout << it->first << endl;

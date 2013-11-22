@@ -152,7 +152,7 @@ int main () {
     
     cout<< "**static reader creating unordered map" << endl;
     unordered_map<string, int> funcMap;
-    funcMap = generate_ast("/Users/SonikaPrakash/Documents/CPSC*410/fish-shell/proc.cpp", "proc.cpp", funcMap);
+    funcMap = exploreDirectory("../codeBase/fish-shell-master/");
     cout << "**done creating the map, now printing pairs.." <<endl;
     
     std::cout << "**funcMap contains:";
