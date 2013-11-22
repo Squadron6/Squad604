@@ -52,6 +52,7 @@ unordered_map<string, int> parse_log(string logfile)
 	return funcMap;	
 }
 
+/*
 int main(void)
 {
 	unordered_map<string, int> functionMap;
@@ -59,4 +60,4 @@ int main(void)
 	for(auto& x: functionMap)
 		cout<< x.first << ": " << x.second << endl;
 }
-
+*/

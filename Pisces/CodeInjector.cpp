@@ -124,10 +124,10 @@ void exploreDirectory(string directory){
   }
 }
 
+/*
 int main(void){
   string dirname = "../../fish-shell-master"; //path to codebase
   //string dirname = "../codeBase/fish-shell-master"; //path to codebase
   exploreDirectory(dirname);
 }
-
-
+*/
