@@ -155,17 +155,17 @@ void exploreDirectory(string directory){
 }
 
 
-int main(void)
-{
+//int main(void)
+//{
 
-	exploreDirectory("../codeBase/fish-shell-master");
-unordered_map<string, int> funcMap;
+//	exploreDirectory("../codeBase/fish-shell-master");
+//unordered_map<string, int> funcMap;
 
-	string test = "echo test this";
-	system(test.c_str());
-	funcMap = generate_ast("../codeBase/fish-shell-master/reader.cpp", "reader.cpp", funcMap);
+//	string test = "echo test this";
+//	system(test.c_str());
+//	funcMap = generate_ast("../codeBase/fish-shell-master/reader.cpp", "reader.cpp", funcMap);
 //	funcMap = generate_ast("../codeBase/fish-shell-master/proc.cpp" , "proc.cpp", funcMap);
 
 //	for(auto& entry: funcMap)
 //		cout << entry.first << " : " << entry.second << endl;
-}
+//}
