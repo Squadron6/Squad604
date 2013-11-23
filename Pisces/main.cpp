@@ -58,6 +58,7 @@ void py_setup(){
     outfile << "server = xmlrpclib.Server('" << server << "')" << endl;
     outfile << Graph << " = server.ubigraph" << endl;
     outfile << Graph << ".clear()" << endl << endl;
+    outfile << Graph << ".set_edge_style_attribute(0," << "\"strength\"" << ", str(0.1))" << endl;
 }
 
 /* set node_ptr back to start */
@@ -77,6 +78,7 @@ void create_nodes(){
                 outfile << "G.new_vertex_w_id(" << node_ptr->id << ")" << endl;
                 outfile << "G.set_vertex_attribute(" << node_ptr->id << "," << "'color', '" << node_ptr-> color << "')" << endl;
                 outfile << "G.set_vertex_attribute(" << node_ptr->id << ",'shape', 'sphere')" << endl;
+                outfile << "G.set_vertex_attribute(" << node_ptr->id  << ",\"label\", \"" << node_ptr->node_name  <<   "\")" << endl;
             }
             
             //move to the next node
