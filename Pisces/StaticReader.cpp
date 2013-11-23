@@ -24,7 +24,12 @@ unordered_map<string, int> static_parse(string dirName)
 	unordered_map<string, int> funcMap;
 	return funcMap;
 }
-
+/*
+This function generates a ast dump file for the given cpp file
+at the same time it also analyzes the ast dump file and outputs a
+unordered_map containing the function calls and the number of occurrences
+of each function in the given cpp file
+*/
 unordered_map<string, int> generate_ast(string fullName, string fileName, unordered_map<string,int> functionMap)
 {
 	unordered_map<string, int> currentMap = functionMap;
@@ -32,6 +37,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 	string astFile = fileName+".ast";
 	system(command.c_str());
 	ifstream infile;
+	//opens the ast dump file for reading
 	infile.open(astFile.c_str());
 	ofstream astLog;
 	astLog.open("astLog.txt", ios::app);
@@ -39,6 +45,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 	int lineCount = 0;
 	string currFuncName;
 	int funcLine = -1;
+	//iterates through every line of the dump file determining by key tags whether the line is a function declaration
 	while(!infile.eof())
 	{
 		getline(infile, currline);
@@ -48,6 +55,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 		istream_iterator<string> beg(buffer), end;
 		vector<string> tokens(beg, end);
 		cout << currline << endl;		
+		//if a function is found, it is trimmed to have only the function name remaining
 		for(auto& s: tokens)
 		{
 			if(s.find("(") != string::npos)
@@ -64,19 +72,21 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 		}
 		//cout << currline << endl << lineCount << endl;
 		}
+		//this determines if a line is a function call inside a method
 		if(currline.find("lvalue Function") != string::npos && funcLine > 0)
 		{
 		string found = currline.substr(currline.find("lvalue Function"));
 		istringstream buffer(found);
 		istream_iterator<string> beg(buffer), end;
 		vector<string> tokens(beg, end);
-
+		//if the line is determined to be a function call, the extra is trimmed off
 		for(auto& s: tokens)
 		{
 			if(s.find("'") != string::npos)
 			{
 			s.erase(0,1);
 			s.erase(s.length()-1, 1);
+			//function is logged as a pair between the current method and the function
 			astLog << currFuncName << " " << s << endl;
 			unordered_map<string, int>::const_iterator got = currentMap.find(s);
 			if(got == currentMap.end())
@@ -92,8 +102,10 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 			}
 		}
 		}
+		//this is another type of function call, the bound member functions calls
 		if(currline.find("bound member function type") != string::npos && funcLine > 0)
 		{
+		//the extra inside each line is trimmed
 		string found = currline.substr(currline.find(">'") + 2);
 		istringstream buffer(found);
 		istream_iterator<string> beg(buffer), end;
@@ -108,6 +120,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 		{
 		functionName.erase(0,1);
 		}
+		//the function is logged in a pair with current method and the function name
 		astLog << currFuncName << " " << functionName << endl;
                 unordered_map<string, int>::const_iterator got = currentMap.find(functionName);
                 if(got == currentMap.end())
@@ -124,6 +137,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 		lineCount++;
 		
 	}
+	//finishing logging by closing the file and returning the unordered_map of functions and occurences
 	astLog.close();
 	return currentMap;
 }
