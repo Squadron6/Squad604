@@ -19,11 +19,11 @@ int totalCalls;
 //consisting of data to be use by GraphMakeri
 using namespace std;
 
-unordered_map<string, int> static_parse(string dirName)
-{
-	unordered_map<string, int> funcMap;
-	return funcMap;
-}
+//unordered_map<string, int> static_parse(string dirName)
+//{
+//	unordered_map<string, int> funcMap;
+//	return funcMap;
+//}
 /*
 This function generates a ast dump file for the given cpp file
 at the same time it also analyzes the ast dump file and outputs a
@@ -40,6 +40,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 	//opens the ast dump file for reading
 	infile.open(astFile.c_str());
 	ofstream astLog;
+	//the astLog.txt contains the list of method call pairs used to create edges
 	astLog.open("astLog.txt", ios::app);
 	string currline;
 	int lineCount = 0;
@@ -73,6 +74,7 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 		//cout << currline << endl << lineCount << endl;
 		}
 		//this determines if a line is a function call inside a method
+		//the lvalue Function determines a function call in the ast dump file
 		if(currline.find("lvalue Function") != string::npos && funcLine > 0)
 		{
 		string found = currline.substr(currline.find("lvalue Function"));
@@ -141,7 +143,10 @@ unordered_map<string, int> generate_ast(string fullName, string fileName, unorde
 	astLog.close();
 	return currentMap;
 }
-
+//In this version of the exploreDirectory() function, the directories are explored
+//to find all the cpp files and generate_ast() is called for each resulting cpp
+//file to creat an unordered_map of function calls and occurences and a matching 
+//pair log file of the static edges
 unordered_map<string, int> exploreDirectory(string directory){
   unsigned char isFile = 0x8;
   unsigned char isFolder = 0x4;
@@ -159,6 +164,8 @@ unordered_map<string, int> exploreDirectory(string directory){
         string dirNames = dirname;
         string fullName = dirNames+"/"+ fileName;
         cout << fullName << " " << fileName << endl;
+	//each time a cpp file is found, generate_ast() is called and the new methods are 
+	//added to the function map
         funcMap = generate_ast(fullName, fileName, funcMap);
         }
       else if (entry->d_type == isFolder && str!="." && str!=".."){ // if it's a folder, not current or parent

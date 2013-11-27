@@ -51,6 +51,8 @@ void inject_code(string fileName, string dirName)
         ofstream tempfile;
         tempfile.open(tempNamec);
         tempfile << "#include <fstream>" << endl;
+      //Check for flags matching in the current line, these are the flags that we should
+      //not inject the test code to
         while(!infile.eof())
         {
     getline(infile, currLine);
@@ -65,6 +67,8 @@ void inject_code(string fileName, string dirName)
       flag = true;
       //printf("%s\n", currLine.c_str());
     }
+	//if the line matches the flags for which we have to inject code
+	//the logging code is injected to the line
     if(currLine.compare("{") != 0 && currLine.compare("}") != 0)
     {
     tempfile << currLine << "\n";
@@ -115,6 +119,7 @@ void exploreDirectory(string directory){
               string fileName = entry->d_name;
         string dirNames = dirname;
         string fullName = dirNames+"/"+ fileName;
+	//if the cpp file is found, the code injection method is called on the given file
         inject_code(fileName, dirNames);
       }
       else if (entry->d_type == isFolder && str!="." && str!=".."){ // if it's a folder, not current or parent

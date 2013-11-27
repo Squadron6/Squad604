@@ -22,7 +22,7 @@ unordered_map<string, int> parse_log(string logfile)
 	const char * fname = logfile.c_str();
 	string currline;
 	infile.open(fname);
-	outfile.open("parsedLog.log");
+	//outfile.open("parsedLog.log");
 	while(!infile.eof())
 	{
 	getline(infile, currline);
@@ -54,13 +54,13 @@ unordered_map<string, int> parse_log(string logfile)
 		if(!functionStack.empty())
 		{
 		string fromFunc = functionStack.top();
-		outfile << fromFunc << " " << toFunc << "\n";
+		//outfile << fromFunc << " " << toFunc << "\n";
 		}
 		}
 	}
 	//close the files and erase the blank line at the end that was causing issues with seg fault
 	infile.close();
-	outfile.close();
+	//outfile.close();
 	funcMap.erase("");
 	return funcMap;	
 }
