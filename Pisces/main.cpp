@@ -7,6 +7,7 @@
 #include <sstream>
 #include <vector>
 #include <unordered_map>
+#include "CodeInjector.h"
 #include "Colourizer.h"
 #include "StaticReader.h"
 #include "DynamicReader.h"
@@ -15,25 +16,42 @@
 using namespace std;
 
 /**
-    main.cpp ties together all the internal components of Piscies and produces a python file that Ubigraph will use to create the graph
+    main.cpp ties together all the internal components of Pisces and produces a python file that Ubigraph will use to create the graph
     @author Sonika Prakash
  
  */
 
-int main () {
+int main (int argc, char* argv[]) {
     
-        // IO stream to read from
-        ifstream infile;
-        // IO stream to write to
-        ofstream outfile;
-        // Log file that contains dynamic output results (a list of the names of funtions)
-        const char* readfile_dynamic = "log.txt";
-        // Log file where the static AST is stored
-        const char* readfile = "astLog.txt";
-        // The python file that will be generated (passed into UbiGraph as input)
-        const char* writefile = "graph.py";
-        // The directory that contains the source files of the code base
-        string dir = "../codeBase/fish-shell-master/";
+    // IO stream to read from
+    ifstream infile;
+    // IO stream to write to
+    ofstream outfile;
+    // The directory that contains the source files of the code base
+    string dir = "../codeBase/fish-shell-master/";
+
+    /* Set up for Dynamic analysis:
+      1. Fish needs to have log files injected into it
+      2. Fish then is configured, compiled, and installed
+      3. Fish is run and waits for user input
+      4. Once the user exits Fish, log.txt is created
+    */
+    string fishauto = "(cd " + dirname + " && autoconf)"; 
+    string fishconf = "(cd " + dirname + " && ./configure --prefix=$HOME)";
+    string fishmake = "make install -C " + dirname;
+    string fishrun = "fish";
+    exploreInjectDirectory(dirname);
+    system(fishauto.c_str());
+    system(fishconf.c_str());
+    system(fishmake.c_str());
+    system(fishrun.c_str());
+
+    // Log file that contains dynamic output results (a list of the names of functions)
+    const char* readfile_dynamic = "log.txt";
+    // Log file where the static AST is stored
+    const char* readfile = "astLog.txt";
+    // The python file that will be generated (passed into UbiGraph as input)
+    const char* writefile = "graph.py";
     
     /* Creates the first node in the linked list. Each element in the linked list represents a node in the graph. Each element contains the node name, color and id. */
     initial_linked_list();
@@ -77,6 +95,6 @@ int main () {
     outfile.close();
     infile.close();
     
-return 0;
+    return 0;
 
 }

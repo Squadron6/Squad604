@@ -1,3 +1,10 @@
+/*
+  Graph Maker
+
+  The Graph Maker takes in the output from the Static and Dynamic
+  Readers and from it, creates a Python script that will be ran
+  in order to create the function call graph with UbiGraph.
+*/
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
@@ -10,6 +17,7 @@
 #include "Colourizer.h"
 #include "StaticReader.h"
 #include "DynamicReader.h"
+#include "GraphMaker.h"
 
 using namespace std;
 

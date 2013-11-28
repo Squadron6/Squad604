@@ -1,3 +1,0 @@
-#!$HOME/bin/fish
-
-exit

@@ -8,6 +8,6 @@
 using namespace std;
 
 void inject_code(std::string fileName, std::string dirName);
-void exploreDirectory(std::string directory);
+void exploreInjectDirectory(std::string directory);
 
 #endif
