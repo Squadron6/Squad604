@@ -36,15 +36,16 @@ int main (int argc, char* argv[]) {
       3. Fish is run and waits for user input
       4. Once the user exits Fish, log.txt is created
     */
-    string fishauto = "(cd " + dirname + " && autoconf)"; 
-    string fishconf = "(cd " + dirname + " && ./configure --prefix=$HOME)";
-    string fishmake = "make install -C " + dirname;
+    string fishauto = "(cd " + dir + " && autoconf)"; 
+    string fishconf = "(cd " + dir + " && ./configure --prefix=$HOME)";
+    string fishmake = "make install -C " + dir;
     string fishrun = "fish";
-    exploreInjectDirectory(dirname);
+    exploreInjectDirectory(dir);
     system(fishauto.c_str());
     system(fishconf.c_str());
     system(fishmake.c_str());
     system(fishrun.c_str());
+    // at this point, Fish is running and waits for user input...
 
     // Log file that contains dynamic output results (a list of the names of functions)
     const char* readfile_dynamic = "log.txt";
