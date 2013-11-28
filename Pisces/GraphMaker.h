@@ -11,11 +11,11 @@ void py_setup(std::ofstream& dumFile);
 
 void reset_node_ptr();
 
-void create_nodes(std::ofstream& dumFile);
+void create_nodes_python(std::ofstream& dumFile);
 
 string get_hex_color(string color);
 
-void create_nodes(unordered_map<string, string> map);
+void create_linked_list_nodes(unordered_map<string, string> map);
 
 void create_edges(std::ifstream& Infile, std::ofstream& dumFile);
 

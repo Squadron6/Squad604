@@ -80,7 +80,7 @@ void reset_node_ptr(){
 }
 
 /* iterates through the nodes, starting from wherever the node_ptr is add to python file*/
-void create_nodes(std::ofstream& dumFile){
+void create_nodes_python(std::ofstream& dumFile){
     if(node_ptr != NULL){
         cout << "node ptr not null..start traversing" << endl;
         while ( node_ptr-> next != NULL ) {
@@ -111,7 +111,7 @@ string get_hex_color(string color){
 }
 
 /* KEEP creates linked list of nodes, sets node_ptr back to start */
-void create_nodes(unordered_map<string, string> map){
+void create_linked_list_nodes(unordered_map<string, string> map){
     for ( auto it = map.begin(); it != map.end(); ++it ){
         string name =  it->first;
         string Color =  it->second;
@@ -127,7 +127,7 @@ void create_nodes(unordered_map<string, string> map){
         node_ptr->next = start2;
         node_ptr = node_ptr->next;
         id_count++;
-        cout << "**Creating linked list, the next node:" << node_ptr->node_name << " color:" << node_ptr->color <<  " id: " << node_ptr->id <<  endl;
+        //cout << "**Creating linked list, the next node:" << node_ptr->node_name << " color:" << node_ptr->color <<  " id: " << node_ptr->id <<  endl;
         
     }
     reset_node_ptr();

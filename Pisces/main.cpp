@@ -14,122 +14,69 @@
 
 using namespace std;
 
-//struct node  {
-//    string node_name;
-//    string color;
-//    int id;
-//    node* next_edge;
-//    node* next;
-//};
-
-//id count
-//int id_count = 0;
-
-//stream to read from readfile
-ifstream infile;
-
-//stream to write to writefile
-ofstream outfile;
-
-//default graph name
-string Graph = "G";
-
-//default server
-//string server = "http://127.0.0.1:20738/RPC2";
-
-//start of linked list
-//node* start;
-
-//iterator for linked list of nodes
-//node* node_ptr;
-
-//the input log file name
-//const char* readfile = "astLog.txt";
-
-//const char* readfile_dynamic = "log.txt";
-
-//the output python file name
-//const char* writefile = "graph.py";
-
+/**
+    main.cpp ties together all the internal components of Piscies and produces a python file that Ubigraph will use to create the graph
+    @author Sonika Prakash
+ 
+ */
 
 int main () {
     
-    const char* readfile_dynamic = "log.txt";
-    const char* readfile = "astLog.txt";
-    const char* writefile = "graph.py";
+        // IO stream to read from
+        ifstream infile;
+        // IO stream to write to
+        ofstream outfile;
+        // Log file that contains dynamic output results (a list of the names of funtions)
+        const char* readfile_dynamic = "log.txt";
+        // Log file where the static AST is stored
+        const char* readfile = "astLog.txt";
+        // The python file that will be generated (passed into UbiGraph as input)
+        const char* writefile = "graph.py";
+        // The directory that contains the source files of the code base
+        string dir = "../codeBase/fish-shell-master/";
     
+    /* Creates the first node in the linked list. Each element in the linked list represents a node in the graph. Each element contains the node name, color and id. */
     initial_linked_list();
     
-    cout<< "**static reader creating unordered map" << endl;
+    /* Create the unordered map that will contain the static function names as keys and frequency of funtions as values. */
     unordered_map<string, int> funcMap;
-    funcMap = exploreDirectory("../codeBase/fish-shell-master/");
-    cout << "**done creating the map, now printing pairs.." <<endl;
-    
-    std::cout << "**funcMap contains:";
-    for ( auto it = funcMap.begin(); it != funcMap.end(); ++it )
-        std::cout << " " << it->first << ":" << it->second;
-    std::cout << endl << endl;
+    // Fills the unordered map
+    funcMap = exploreDirectory(dir);
      
-    //Create the Colorizer hash map (again passing in dummy map, since funcMap doesnt seem to work)
+    /* Create another unordered map (based on the funMap) that will contain the static function names as keys and function colors as values */
     unordered_map<string, string> colored_map = convert_to_RGB(funcMap, find_max(funcMap), find_min(funcMap));
     
-    //initialize linked list
-//    start = new node;
-//    start->node_name = "start";
-//    start->color = " ";
-//    start->id = -1;
-//    start->next = NULL;
-//    node_ptr = start;
-//    cout << "**Creating linked list, the start node: " << node_ptr->node_name <<endl;
+    /* Creates a linked list of nodes (in no particular order, nodes are just created and added to the linked list) */
+    create_linked_list_nodes(colored_map);
     
-    //this will be the static graph
-    create_nodes(colored_map);
-    
-    //incase we don't start at the beginning of the node list, reset the node pointer
+    /* Incase we don't start at the beginning of the node list, reset the node pointer for future use. */
     reset_node_ptr();
     
-    
-    //start coloring the nodes according to the dynamic calls to methods
+    /* Create unordered map that will contain colors of functions based on dynamic function frequency results */
     unordered_map<string, int> funcMap2;
     funcMap2 = parse_log(readfile_dynamic);
     unordered_map<string, string> colored_map_dynamic = convert_to_RGB(funcMap2, find_max(funcMap2), find_min(funcMap2));
     
-    //start creating python script for ubigraph
-    infile.open(readfile);      //use the log file to generate edges
-    outfile.open(writefile);    //this is the output python file
+    /* Start creating python script as input for UbiGraph */
+    infile.open(readfile);
+    outfile.open(writefile);
     
-    cout << "creating python script" << endl;
+    /* Adds libraries and other setup stuff to python file */
     py_setup(outfile);
-    //sanity check: have nodes been created?
     
-    cout << "sanity check: can we traverse nodes?" << endl;
-    create_nodes(outfile);
+    /* Iterate through the linked list and create the nodes with their respective colors in the python file */
+    create_nodes_python(outfile);
     
-    //create edges between nodes
+    /* Create edges between nodes bases on the from:to pairs in the log file in the python file */
     create_edges(infile,outfile);
     
-    //this will be the dynamic runtime color added to the static graph
+    /* Add the dynamic runtime function frequency color to the nodes from the static graph */
     recolor_nodes(colored_map_dynamic, outfile);
     
+    /* Finished creating the python, close all IO streams that were opened */
     outfile.close();
     infile.close();
-    cout << "finished creating python script" << endl;
-    
-    
-    //parse_file();
-    //traverse_nodes();
-    
     
 return 0;
 
 }
-
-/*
- 
-g++ -c -std=c++11 Colourizer.cpp
-g++ -c -std=c++11 StaticReader.cpp
-g++ -c -std=c++11 main.cpp
-g++ -o final main.o StaticReader.o Colourizer.o
-./final
- 
-*/
