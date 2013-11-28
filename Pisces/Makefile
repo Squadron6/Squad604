@@ -1,8 +1,9 @@
 # Makefile for Static and Dynamic Analysis of Fish
-all: pisces
+all: Pisces
+	@echo Compile complete, you can now run Pisces
 
-pisces: main.o GraphMaker.o Colourizer.o StaticReader.o DynamicReader.o CodeInjector.o
-	g++ main.o GraphMaker.o Colourizer.o StaticReader.o DynamicReader.o CodeInjector.o -o pisces
+Pisces: main.o GraphMaker.o Colourizer.o StaticReader.o DynamicReader.o CodeInjector.o
+	g++ main.o GraphMaker.o Colourizer.o StaticReader.o DynamicReader.o CodeInjector.o -o Pisces
 
 main.o: main.cpp
 	g++ -c -std=c++11 main.cpp
