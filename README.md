@@ -19,7 +19,7 @@ Notes
 Setup
 -----
 
-### To install/run Fish
+### To install/run Fish ###
 1. Install autoconf and the g++ compiler
 2. Install curses:
 - Debian or Ubuntu:
@@ -30,7 +30,7 @@ sudo apt-get install libncurses5-dev
 ```
 sudo yum install ncurses-devel
 ```
-### To run Pisces
+### To run Pisces ###
 1. Install g++ compiler
 2. Install Python
 3. Install clang
