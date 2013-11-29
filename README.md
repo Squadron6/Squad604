@@ -30,6 +30,7 @@ sudo apt-get install libncurses5-dev
 ```
 sudo yum install ncurses-devel
 ```
+
 ### To run Pisces ###
 1. Install g++ compiler
 2. Install Python
