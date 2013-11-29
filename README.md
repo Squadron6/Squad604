@@ -8,6 +8,7 @@ Group 6 - CPSC 410 project
 - George Zheng (gezed)
 
 Target Code: [Fish-Shell](https://github.com/fish-shell/fish-shell)
+
 Video: [YouTube](http://youtu.be/ywBQI-higsc)
 
 Notes
