@@ -1,0 +1,23 @@
+Testing:
+========
+
+CodeInjector:
+- ran code, looked at modified Fish codebase
+- if one file visually looks like the logging statements are in the right place, then compile
+- see where compile errors show up & see what the case is that it is injecting on
+- include case for check
+- repeat until Fish compiles with injected log statements
+- then run Fish, give it input, and visually inspect the resultant log.txt file
+
+DynamicReader:
+- visually trace through log file from CodeInjector
+- run DynamicReader
+- trace through outputted parsedLog and see if it matches log from CodeInjector
+
+Colourizer:
+We generated a sample unordered_map with sample values that we expect to obtain from static and dynamic reader (e.g <function_A, 13>) and used it to investigate the change in colour value and its validity as a colourizer function. (We made sure colours were changing appropriately)
+
+GraphMaker:
+- created an unordered map with sample values
+- pass it in to GraphMaker and when the Python file is created, run it
+- see if UbiGraph output matches sample values passed in
